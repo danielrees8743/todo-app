@@ -151,6 +151,23 @@ export function useTodos() {
     },
   });
 
+  // Update Todo Details (Title, Description, Priority, Due Date)
+  const updateTodoDetailsMutation = useMutation({
+    mutationFn: async ({ id, updates }) => {
+      // Map frontend camelCase to snake_case if necessary, or just expect correct keys
+      // updates should be { title, description, priority, due_datetime }
+      const { error } = await supabase
+        .from('todos')
+        .update(updates)
+        .eq('id', id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['todos'] });
+    },
+  });
+
   // Subtask Mutations
   const addSubtaskMutation = useMutation({
     mutationFn: async ({ todoId, title }) => {
@@ -195,6 +212,8 @@ export function useTodos() {
   const updateTags = (id, tags) => updateTagsMutation.mutate({ id, tags });
   const updatePosition = (id, position) =>
     updatePositionMutation.mutate({ id, position });
+  const updateTodoDetails = (id, updates) =>
+    updateTodoDetailsMutation.mutate({ id, updates });
 
   const addSubtask = (todoId, title) =>
     addSubtaskMutation.mutate({ todoId, title });
@@ -209,6 +228,7 @@ export function useTodos() {
     addTodo,
     updateTags,
     updatePosition,
+    updateTodoDetails,
     addSubtask,
     toggleSubtask,
     deleteSubtask,

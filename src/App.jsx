@@ -22,6 +22,7 @@ import ForgotPassword from './components/ForgotPassword';
 import TodoCard from './components/TodoCard';
 import SortableTodoCard from './components/SortableTodoCard';
 import AddTodoModal from './components/AddTodoModal';
+import TodoDetailsModal from './components/TodoDetailsModal';
 import AIChat from './components/AIChat';
 import WeatherWidget from './components/WeatherWidget';
 import DataMigration from './components/DataMigration';
@@ -38,12 +39,14 @@ function TodoApp() {
     addTodo,
     updateTags,
     updatePosition,
+    updateTodoDetails,
     addSubtask,
     toggleSubtask,
     deleteSubtask,
     loading,
   } = useTodos();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTodo, setSelectedTodo] = useState(null);
   const [isToolsOpen, setIsToolsOpen] = useState(false);
   const [activeTool, setActiveTool] = useState(null);
   const [activeFilter, setActiveFilter] = useState('All Tasks');
@@ -401,6 +404,7 @@ function TodoApp() {
                           onAddSubtask={addSubtask}
                           onToggleSubtask={toggleSubtask}
                           onDeleteSubtask={deleteSubtask}
+                          onClick={() => setSelectedTodo(todo)}
                         />
                       ))}
                     </div>
@@ -418,6 +422,7 @@ function TodoApp() {
                       onAddSubtask={addSubtask}
                       onToggleSubtask={toggleSubtask}
                       onDeleteSubtask={deleteSubtask}
+                      onClick={() => setSelectedTodo(todo)}
                     />
                   ))}
                 </div>
@@ -451,6 +456,17 @@ function TodoApp() {
         onClose={() => setIsModalOpen(false)}
         onAdd={addTodo}
       />
+
+      <TodoDetailsModal
+        isOpen={!!selectedTodo}
+        onClose={() => setSelectedTodo(null)}
+        todo={selectedTodo}
+        onUpdateTodo={updateTodoDetails}
+        onAddSubtask={addSubtask}
+        onToggleSubtask={toggleSubtask}
+        onDeleteSubtask={deleteSubtask}
+      />
+
       <DataMigration />
     </div>
   );

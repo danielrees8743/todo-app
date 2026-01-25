@@ -10,6 +10,8 @@ Build a simple, maintainable application that is easy to extend and test.
 - React Router v6
 - lucide-react
 - Tanstack Query
+- Vitest + React Testing Library
+- Supabase (Auth & Database)
 
 ## Coding Style
 
