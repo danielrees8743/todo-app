@@ -46,7 +46,7 @@ function TodoApp() {
     loading,
   } = useTodos();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedTodo, setSelectedTodo] = useState(null);
+  const [selectedTodoId, setSelectedTodoId] = useState(null);
   const [isToolsOpen, setIsToolsOpen] = useState(false);
   const [activeTool, setActiveTool] = useState(null);
   const [activeFilter, setActiveFilter] = useState('All Tasks');
@@ -221,6 +221,7 @@ function TodoApp() {
   };
 
   const filteredTodos = getFilteredTodos();
+  const selectedTodo = todos.find((t) => t.id === selectedTodoId);
 
   return (
     <div className='min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200 flex flex-col'>
@@ -404,7 +405,7 @@ function TodoApp() {
                           onAddSubtask={addSubtask}
                           onToggleSubtask={toggleSubtask}
                           onDeleteSubtask={deleteSubtask}
-                          onClick={() => setSelectedTodo(todo)}
+                          onClick={() => setSelectedTodoId(todo.id)}
                         />
                       ))}
                     </div>
@@ -422,7 +423,7 @@ function TodoApp() {
                       onAddSubtask={addSubtask}
                       onToggleSubtask={toggleSubtask}
                       onDeleteSubtask={deleteSubtask}
-                      onClick={() => setSelectedTodo(todo)}
+                      onClick={() => setSelectedTodoId(todo.id)}
                     />
                   ))}
                 </div>
@@ -459,7 +460,7 @@ function TodoApp() {
 
       <TodoDetailsModal
         isOpen={!!selectedTodo}
-        onClose={() => setSelectedTodo(null)}
+        onClose={() => setSelectedTodoId(null)}
         todo={selectedTodo}
         onUpdateTodo={updateTodoDetails}
         onAddSubtask={addSubtask}
