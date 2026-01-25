@@ -122,8 +122,19 @@ export default function AIChat({
             onAddSubtask(args.todo_id, args.title);
             toolResults.push(`Added subtask: ${args.title}`);
           } else if (functionName === 'toggle_todo') {
-            onToggleTodo(args.id);
-            toolResults.push(`Updated task status for ID: ${args.id}`);
+            const titleToFind = args.todo_title;
+            const todo = todos.find(
+              (t) => t.title.toLowerCase() === titleToFind.toLowerCase(),
+            );
+
+            if (todo) {
+              onToggleTodo(todo.id);
+              toolResults.push(`Updated task status for: ${todo.title}`);
+            } else {
+              toolResults.push(
+                `Could not find a task with the title: "${titleToFind}"`,
+              );
+            }
           } else if (functionName === 'get_weather') {
             try {
               const weather = await fetchWeatherByCity(args.city);

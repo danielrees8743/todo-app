@@ -130,12 +130,12 @@ export const chatWithBear = async (messages, todoContext = '') => {
           parameters: {
             type: 'object',
             properties: {
-              id: {
-                type: 'integer',
-                description: 'The ID of the todo task to toggle',
+              todo_title: {
+                type: 'string',
+                description: 'The title of the todo task to toggle (exact match preferred)',
               },
             },
-            required: ['id'],
+            required: ['todo_title'],
           },
         },
       },
