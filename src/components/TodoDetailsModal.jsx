@@ -207,11 +207,11 @@ export default function TodoDetailsModal({
                       }
                       className={`shrink-0 w-5 h-5 rounded border flex items-center justify-center transition-all ${
                         subtask.completed
-                          ? 'bg-blue-600 border-blue-600 text-white'
+                          ? 'bg-blue-600 border-blue-600 text-white dark:text-white'
                           : 'border-gray-300 dark:border-gray-500 text-transparent hover:border-blue-500'
                       }`}
                     >
-                      <Check size={12} strokeWidth={3} />
+                      <Check size={12} strokeWidth={3} className="stroke-current" />
                     </button>
                     <span
                       className={`flex-1 text-sm ${subtask.completed ? 'text-gray-400 line-through' : 'text-gray-700 dark:text-gray-200'}`}
@@ -233,7 +233,7 @@ export default function TodoDetailsModal({
                 type='text'
                 value={newSubtask}
                 onChange={(e) => setNewSubtask(e.target.value)}
-                className='w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 outline-none transition-all'
+                className='w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all'
                 placeholder='Add a subtask...'
               />
               <Plus
