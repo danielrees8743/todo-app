@@ -93,7 +93,7 @@ export default function AIChat({
               ? `\n    Subtasks: ${t.subtasks.map((s) => `${s.title} (${s.completed ? 'Done' : 'Todo'})`).join(', ')}`
               : '';
 
-          return `ID: ${t.id}\n- [${status}] ${t.title} (${priority}) ${tags}${subtasks}`;
+          return `- [${status}] ${t.title} (${priority}) ${tags}${subtasks}`;
         })
         .join('\n\n');
 
@@ -119,8 +119,21 @@ export default function AIChat({
             });
             toolResults.push(`Added task: ${args.title}`);
           } else if (functionName === 'add_subtask') {
-            onAddSubtask(args.todo_id, args.title);
-            toolResults.push(`Added subtask: ${args.title}`);
+            const titleToFind = args.todo_title;
+            const todo = todos.find(
+              (t) => t.title.toLowerCase() === titleToFind.toLowerCase(),
+            );
+
+            if (todo) {
+              onAddSubtask(todo.id, args.title);
+              toolResults.push(
+                `Added subtask "${args.title}" to "${todo.title}"`,
+              );
+            } else {
+              toolResults.push(
+                `Could not find a task with the title: "${titleToFind}"`,
+              );
+            }
           } else if (functionName === 'toggle_todo') {
             const titleToFind = args.todo_title;
             const todo = todos.find(
