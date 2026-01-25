@@ -10,6 +10,7 @@ export default function TodoCard({
   onAddSubtask,
   onToggleSubtask,
   onDeleteSubtask,
+  onClick,
 }) {
   const [isAddingSubtask, setIsAddingSubtask] = useState(false);
   const [subtaskTitle, setSubtaskTitle] = useState('');
@@ -19,6 +20,7 @@ export default function TodoCard({
 
   const handleAddSubtask = (e) => {
     e.preventDefault();
+    e.stopPropagation();
     if (subtaskTitle.trim()) {
       onAddSubtask(todo.id, subtaskTitle);
       setSubtaskTitle('');
@@ -26,7 +28,8 @@ export default function TodoCard({
     }
   };
 
-  const handleGenerateSubtasks = async () => {
+  const handleGenerateSubtasks = async (e) => {
+    e?.stopPropagation();
     if (!todo.title) return;
 
     setIsGeneratingAI(true);
@@ -49,6 +52,7 @@ export default function TodoCard({
 
   const handleAddTag = (e) => {
     e.preventDefault();
+    e.stopPropagation();
     if (newTag.trim()) {
       const updatedTags = [...(todo.tags || []), newTag.trim()];
       onUpdateTags(todo.id, updatedTags);
@@ -85,7 +89,8 @@ export default function TodoCard({
 
   return (
     <div
-      className={`p-4 rounded-xl shadow-sm border transition-all duration-200 hover:shadow-md 
+      onClick={onClick}
+      className={`p-4 rounded-xl shadow-sm border transition-all duration-200 hover:shadow-md cursor-pointer 
       ${
         todo.completed
           ? 'bg-gray-50 border-gray-200 dark:bg-gray-800/50 dark:border-gray-700'
@@ -134,7 +139,10 @@ export default function TodoCard({
             >
               #{tag}
               <button
-                onClick={() => handleRemoveTag(tag)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleRemoveTag(tag);
+                }}
                 className={`hidden group-hover:block ml-1 ${styles.close}`}
               >
                 <X size={10} />
@@ -144,7 +152,11 @@ export default function TodoCard({
         })}
 
         {isAddingTag ? (
-          <form onSubmit={handleAddTag} className='flex items-center gap-1'>
+          <form
+            onSubmit={handleAddTag}
+            onClick={(e) => e.stopPropagation()}
+            className='flex items-center gap-1'
+          >
             <input
               type='text'
               autoFocus
@@ -169,7 +181,10 @@ export default function TodoCard({
           </form>
         ) : (
           <button
-            onClick={() => setIsAddingTag(true)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsAddingTag(true);
+            }}
             className={`flex items-center gap-1 transition-colors ${
               todo.tags && todo.tags.length > 0
                 ? 'p-0.5 text-gray-400 hover:text-blue-500'
@@ -205,7 +220,10 @@ export default function TodoCard({
           {todo.subtasks?.map((subtask) => (
             <div key={subtask.id} className='flex items-center gap-2 group'>
               <button
-                onClick={() => onToggleSubtask(subtask.id, subtask.completed)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleSubtask(subtask.id, subtask.completed);
+                }}
                 className={`shrink-0 w-4 h-4 rounded border flex items-center justify-center transition-colors ${
                   subtask.completed
                     ? 'bg-blue-500 border-blue-500 text-white'
@@ -224,7 +242,10 @@ export default function TodoCard({
                 {subtask.title}
               </span>
               <button
-                onClick={() => onDeleteSubtask(subtask.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDeleteSubtask(subtask.id);
+                }}
                 className='opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-500 transition-all'
               >
                 <X size={12} />
@@ -237,6 +258,7 @@ export default function TodoCard({
         {isAddingSubtask ? (
           <form
             onSubmit={handleAddSubtask}
+            onClick={(e) => e.stopPropagation()}
             className='mt-2 flex items-center gap-2'
           >
             <input
@@ -265,7 +287,10 @@ export default function TodoCard({
         ) : (
           <div className='flex items-center gap-2 mt-2'>
             <button
-              onClick={() => setIsAddingSubtask(true)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsAddingSubtask(true);
+              }}
               className='flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors'
             >
               <Plus size={14} />
@@ -317,7 +342,10 @@ export default function TodoCard({
 
         <div className='flex justify-end gap-2'>
           <button
-            onClick={() => onToggle(todo.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggle(todo.id);
+            }}
             className={`p-1.5 rounded-lg transition-colors ${
               todo.completed
                 ? 'bg-green-100 text-green-600 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400'
@@ -329,7 +357,10 @@ export default function TodoCard({
           </button>
 
           <button
-            onClick={() => onDelete(todo.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(todo.id);
+            }}
             className='p-1.5 rounded-lg bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-500 dark:bg-red-900/20 dark:hover:bg-red-900/40 transition-colors'
             title='Delete task'
           >
