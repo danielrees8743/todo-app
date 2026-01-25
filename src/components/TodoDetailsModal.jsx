@@ -119,7 +119,7 @@ export default function TodoDetailsModal({
             </div>
           </div>
 
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+          <div className='space-y-6'>
             {/* Due Date & Time */}
             <div className='space-y-4'>
               <label className='block text-xs font-semibold text-gray-400 uppercase tracking-wider'>
