@@ -9,6 +9,7 @@ import {
   User,
   Loader2,
   Dog,
+  Trash2,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { chatWithBear } from '../lib/openai';
@@ -184,12 +185,22 @@ export default function AIChat({
     }
   };
 
+  const handleClearChat = (e) => {
+    e.stopPropagation(); // Prevent toggling the chat window
+    setMessages([
+      {
+        role: 'assistant',
+        content: "Hi! I'm Bear. How can I help you get things done today?",
+      },
+    ]);
+  };
+
   return (
     <div className='bg-white dark:bg-gray-800 rounded-xl shadow-sm mb-6 border border-indigo-100 dark:border-indigo-900/30 overflow-hidden transition-all duration-300'>
       {/* Header */}
-      <button
+      <div
         onClick={() => setIsOpen(!isOpen)}
-        className='w-full flex items-center justify-between p-4 bg-indigo-50/50 dark:bg-indigo-900/10 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors'
+        className='w-full flex items-center justify-between p-4 bg-indigo-50/50 dark:bg-indigo-900/10 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors cursor-pointer'
       >
         <div className='flex items-center gap-2.5'>
           <div className='w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-xl overflow-hidden'>
@@ -204,10 +215,19 @@ export default function AIChat({
             </p>
           </div>
         </div>
-        <div className='text-gray-400'>
+        <div className='flex items-center gap-2 text-gray-400'>
+          {isOpen && (
+            <button
+              onClick={handleClearChat}
+              className='p-1.5 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors mr-2'
+              title='Clear Chat History'
+            >
+              <Trash2 size={16} />
+            </button>
+          )}
           {isOpen ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
         </div>
-      </button>
+      </div>
 
       {/* Content */}
       <div
