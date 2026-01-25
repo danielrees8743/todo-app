@@ -212,19 +212,21 @@ export default function PomodoroTimer() {
       </div>
 
       <div className='text-center mb-4'>
-        <div className={`text-3xl font-mono font-bold transition-colors ${
-             minutes === 0 && seconds <= 30 && isActive
-               ? 'text-red-600 dark:text-red-400 animate-pulse' 
-               : 'text-gray-800 dark:text-gray-100'
-          }`}>
+        <div
+          className={`text-3xl font-mono font-bold transition-colors ${
+            minutes === 0 && seconds <= 30 && isActive
+              ? 'text-red-600 dark:text-red-400 animate-pulse'
+              : 'text-gray-800 dark:text-gray-100'
+          }`}
+        >
           {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
         </div>
 
         {/* Simple Progress Bar */}
         <div className='w-full bg-gray-200 dark:bg-gray-700 h-1.5 rounded-full mt-2 overflow-hidden'>
           <div
-             className={`h-full transition-all duration-1000 ${
-                minutes === 0 && seconds <= 30 ? 'bg-red-500' : 'bg-orange-500'
+            className={`h-full transition-all duration-1000 ${
+              minutes === 0 && seconds <= 30 ? 'bg-red-500' : 'bg-orange-500'
             }`}
             style={{ width: `${progress}%` }}
           ></div>

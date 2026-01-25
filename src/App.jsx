@@ -168,13 +168,14 @@ function TodoApp() {
         return filtered.sort((a, b) => b.createdAt - a.createdAt);
       case 'Oldest':
         return filtered.sort((a, b) => a.createdAt - b.createdAt);
-      case 'Priority':
-        { const priorityWeight = { High: 3, Medium: 2, Low: 1 };
+      case 'Priority': {
+        const priorityWeight = { High: 3, Medium: 2, Low: 1 };
         return filtered.sort((a, b) => {
           const pA = priorityWeight[a.priority] || 0;
           const pB = priorityWeight[b.priority] || 0;
           return pB - pA;
-        }); }
+        });
+      }
       case 'Due Date':
         return filtered.sort((a, b) => {
           if (!a.dueDateTime) return 1;
