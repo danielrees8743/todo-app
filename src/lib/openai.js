@@ -50,8 +50,10 @@ export const chatWithBear = async (messages, todoContext = '') => {
       
       The current date and time is: ${new Date().toLocaleString()}
       
-      Here is the user's current todo list context (with IDs):
+      Here is the user's current todo list context:
       ${todoContext}
+
+      IMPORTANT: Never mention the internal IDs of tasks to the user. Always refer to tasks by their Title.
       
       When the user asks you to add a new task, you MUST ask for the following information if it hasn't been provided yet:
       1. Title
@@ -109,16 +111,16 @@ export const chatWithBear = async (messages, todoContext = '') => {
           parameters: {
             type: 'object',
             properties: {
-              todo_id: {
+              todo_title: {
                 type: 'string',
-                description: 'The ID of the parent todo task',
+                description: 'The title of the parent todo task',
               },
               title: {
                 type: 'string',
                 description: 'The title of the subtask',
               },
             },
-            required: ['todo_id', 'title'],
+            required: ['todo_title', 'title'],
           },
         },
       },
@@ -130,12 +132,13 @@ export const chatWithBear = async (messages, todoContext = '') => {
           parameters: {
             type: 'object',
             properties: {
-              id: {
-                type: 'integer',
-                description: 'The ID of the todo task to toggle',
+              todo_title: {
+                type: 'string',
+                description:
+                  'The title of the todo task to toggle (exact match preferred)',
               },
             },
-            required: ['id'],
+            required: ['todo_title'],
           },
         },
       },
