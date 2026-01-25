@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../../lib/supabase';
 import { Database, Trash2, Upload, AlertCircle } from 'lucide-react';
 
 export default function DataMigration() {

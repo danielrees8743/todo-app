@@ -16,7 +16,7 @@ import {
   fetchWeatherByCity as getCityWeather,
   fetchWeatherByCoords as getCoordsWeather,
   getWeatherDescription,
-} from '../lib/weather';
+} from '../../lib/weather';
 
 export default function WeatherWidget() {
   const [searchQuery, setSearchQuery] = useState('');

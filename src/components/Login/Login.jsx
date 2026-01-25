@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { LogIn } from 'lucide-react';
-import ThemeToggle from './ThemeToggle';
-import { supabase } from '../lib/supabase';
+import ThemeToggle from '../ThemeToggle/ThemeToggle';
+import { supabase } from '../../lib/supabase';
 
 export default function Login() {
   const [email, setEmail] = useState('');

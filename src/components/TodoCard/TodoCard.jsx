@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Check, Trash2, Clock, Plus, X, Tag, Sparkles } from 'lucide-react';
-import { getAISuggestions } from '../lib/openai';
+import { getAISuggestions } from '../../lib/openai';
 
 export default function TodoCard({
   todo,
