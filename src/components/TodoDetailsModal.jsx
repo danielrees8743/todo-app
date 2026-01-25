@@ -135,7 +135,7 @@ export default function TodoDetailsModal({
                     name='dueDate'
                     value={formData.dueDate}
                     onChange={handleChange}
-                    className='w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none'
+                    className='w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none dark:scheme:dark'
                   />
                 </div>
                 <div className='relative w-32'>
@@ -148,7 +148,7 @@ export default function TodoDetailsModal({
                     name='dueTime'
                     value={formData.dueTime}
                     onChange={handleChange}
-                    className='w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none'
+                    className='w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none dark:[color-scheme:dark]'
                   />
                 </div>
               </div>
@@ -211,7 +211,11 @@ export default function TodoDetailsModal({
                           : 'border-gray-300 dark:border-gray-500 text-transparent hover:border-blue-500'
                       }`}
                     >
-                      <Check size={12} strokeWidth={3} className="stroke-current" />
+                      <Check
+                        size={12}
+                        strokeWidth={3}
+                        color={subtask.completed ? 'white' : 'currentColor'}
+                      />
                     </button>
                     <span
                       className={`flex-1 text-sm ${subtask.completed ? 'text-gray-400 line-through' : 'text-gray-700 dark:text-gray-200'}`}
