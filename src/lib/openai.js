@@ -53,7 +53,7 @@ export const chatWithBear = async (messages, todoContext = '') => {
       Here is the user's current todo list context:
       ${todoContext}
 
-      IMPORTANT: Never mention the internal IDs of tasks to the user. Always refer to tasks by their Title.
+      IMPORTANT: When referencing tasks, always use their Title and other user-visible details, and omit any internal identifiers or database keys from your responses.
       
       When the user asks you to add a new task, you MUST ask for the following information if it hasn't been provided yet:
       1. Title
