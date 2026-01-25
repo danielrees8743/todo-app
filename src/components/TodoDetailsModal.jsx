@@ -128,7 +128,7 @@ export default function TodoDetailsModal({
               <div className='flex gap-2'>
                 <div className='relative flex-1'>
                   <Calendar
-                    className='absolute left-3 top-2.5 text-gray-400'
+                    className='absolute left-3 top-2.5 text-gray-400 dark:text-gray-300 pointer-events-none'
                     size={16}
                   />
                   <input
@@ -136,12 +136,12 @@ export default function TodoDetailsModal({
                     name='dueDate'
                     value={formData.dueDate}
                     onChange={handleChange}
-                    className='w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none dark:scheme:dark'
+                    className='w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none dark:[color-scheme:dark] transition-colors'
                   />
                 </div>
                 <div className='relative w-32'>
                   <Clock
-                    className='absolute left-3 top-2.5 text-gray-400'
+                    className='absolute left-3 top-2.5 text-gray-400 dark:text-gray-300 pointer-events-none'
                     size={16}
                   />
                   <input
@@ -149,7 +149,7 @@ export default function TodoDetailsModal({
                     name='dueTime'
                     value={formData.dueTime}
                     onChange={handleChange}
-                    className='w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none dark:scheme:dark'
+                    className='w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none dark:[color-scheme:dark] transition-colors'
                   />
                 </div>
               </div>
@@ -166,7 +166,7 @@ export default function TodoDetailsModal({
                     key={p}
                     type='button'
                     onClick={() => setFormData({ ...formData, priority: p })}
-                    className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium border transition-all ${
+                    className={`flex-1 flex items-center justify-center py-2 px-3 rounded-lg text-sm font-medium border transition-all ${
                       formData.priority === p
                         ? p === 'High'
                           ? 'bg-red-50 border-red-200 text-red-700 dark:bg-red-900/20 dark:border-red-800 dark:text-red-300'
