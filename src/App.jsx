@@ -14,7 +14,7 @@ import {
 } from '@dnd-kit/sortable';
 import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { Plus, Filter, ChevronDown, Check } from 'lucide-react';
+import { Plus, Filter, ChevronDown, Check, Wrench, X } from 'lucide-react';
 import Header from './components/Header';
 import Login from './components/Login';
 import Register from './components/Register';
@@ -26,6 +26,7 @@ import AIChat from './components/AIChat';
 import WeatherWidget from './components/WeatherWidget';
 import DataMigration from './components/DataMigration';
 import UserProfile from './components/UserProfile';
+import PomodoroTimer from './components/PomodoroTimer';
 import { useTodos } from './hooks/useTodos';
 import { supabase } from './lib/supabase';
 
@@ -43,6 +44,8 @@ function TodoApp() {
     loading,
   } = useTodos();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isToolsOpen, setIsToolsOpen] = useState(false);
+  const [activeTool, setActiveTool] = useState(null);
   const [activeFilter, setActiveFilter] = useState('All Tasks');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('Custom');
@@ -165,13 +168,14 @@ function TodoApp() {
         return filtered.sort((a, b) => b.createdAt - a.createdAt);
       case 'Oldest':
         return filtered.sort((a, b) => a.createdAt - b.createdAt);
-      case 'Priority':
-        { const priorityWeight = { High: 3, Medium: 2, Low: 1 };
+      case 'Priority': {
+        const priorityWeight = { High: 3, Medium: 2, Low: 1 };
         return filtered.sort((a, b) => {
           const pA = priorityWeight[a.priority] || 0;
           const pB = priorityWeight[b.priority] || 0;
           return pB - pA;
-        }); }
+        });
+      }
       case 'Due Date':
         return filtered.sort((a, b) => {
           if (!a.dueDateTime) return 1;
@@ -226,13 +230,57 @@ function TodoApp() {
             <WeatherWidget />
 
             <div className='bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6'>
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className='w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors shadow-sm mb-6'
-              >
-                <Plus size={20} />
-                Add New Task
-              </button>
+              <div className='flex gap-2 mb-6'>
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className='flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors shadow-sm'
+                >
+                  <Plus size={20} />
+                  Add New Task
+                </button>
+                <button
+                  onClick={() => setIsToolsOpen(!isToolsOpen)}
+                  className={`px-4 rounded-lg border transition-colors flex items-center justify-center ${
+                    isToolsOpen
+                      ? 'bg-blue-50 border-blue-200 text-blue-600 dark:bg-blue-900/30 dark:border-blue-800 dark:text-blue-300'
+                      : 'border-gray-200 text-gray-500 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700'
+                  }`}
+                  title='Tools'
+                >
+                  {isToolsOpen ? <X size={20} /> : <Wrench size={20} />}
+                </button>
+              </div>
+
+              {isToolsOpen && (
+                <div className='mb-6 animate-in slide-in-from-top-2 duration-200'>
+                  <div className='text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2'>
+                    Tools
+                  </div>
+                  <div className='grid grid-cols-1 gap-1'>
+                    <button
+                      onClick={() =>
+                        setActiveTool(
+                          activeTool === 'pomodoro' ? null : 'pomodoro',
+                        )
+                      }
+                      className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center justify-between ${
+                        activeTool === 'pomodoro'
+                          ? 'bg-orange-50 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 font-medium'
+                          : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                      }`}
+                    >
+                      Pomodoro Timer
+                      {activeTool === 'pomodoro' && <Check size={14} />}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {activeTool === 'pomodoro' && (
+                <div className='mb-6 animate-in fade-in duration-300'>
+                  <PomodoroTimer />
+                </div>
+              )}
 
               <div className='space-y-2'>
                 <h3 className='text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3'>
