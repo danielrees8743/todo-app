@@ -1,13 +1,13 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
-import TodoDetailsModal from './TodoDetailsModal';
+import ForgotPassword from './ForgotPassword';
 
-describe('TodoDetailsModal', () => {
+describe('ForgotPassword', () => {
   it('renders without crashing', () => {
     render(
       <BrowserRouter>
-        <TodoDetailsModal isOpen={true} onClose={() => {}} todo={{id: 1, title: "Test Todo", tags: [], subtasks: []}} onUpdateTodo={() => {}} />
+        <ForgotPassword  />
       </BrowserRouter>
     );
     // Add more specific assertions here

@@ -11,9 +11,9 @@ import {
   Dog,
   Trash2,
 } from 'lucide-react';
-import { supabase } from '../lib/supabase';
-import { chatWithBear } from '../lib/openai';
-import { fetchWeatherByCity, getWeatherDescription } from '../lib/weather';
+import { supabase } from '../../lib/supabase';
+import { chatWithBear } from '../../lib/openai';
+import { fetchWeatherByCity, getWeatherDescription } from '../../lib/weather';
 
 export default function AIChat({
   todos = [],

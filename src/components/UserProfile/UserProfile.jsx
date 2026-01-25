@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Cropper from 'react-easy-crop';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../../lib/supabase';
 import {
   User,
   Lock,
@@ -15,8 +15,8 @@ import {
   ZoomOut,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import Header from './Header';
-import getCroppedImg from '../utils/cropImage';
+import Header from '../Header/Header';
+import getCroppedImg from '../../utils/cropImage';
 
 export default function UserProfile() {
   const queryClient = useQueryClient();

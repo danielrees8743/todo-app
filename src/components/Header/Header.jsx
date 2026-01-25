@@ -10,9 +10,9 @@ import {
   X,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import ThemeToggle from './ThemeToggle';
-import { supabase } from '../lib/supabase';
-import { useTodos } from '../hooks/useTodos';
+import ThemeToggle from '../ThemeToggle/ThemeToggle';
+import { supabase } from '../../lib/supabase';
+import { useTodos } from '../../hooks/useTodos';
 
 export default function Header({ searchQuery, onSearch }) {
   const { todos } = useTodos();

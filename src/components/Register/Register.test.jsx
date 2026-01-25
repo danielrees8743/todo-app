@@ -1,13 +1,13 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
-import TodoDetailsModal from './TodoDetailsModal';
+import Register from './Register';
 
-describe('TodoDetailsModal', () => {
+describe('Register', () => {
   it('renders without crashing', () => {
     render(
       <BrowserRouter>
-        <TodoDetailsModal isOpen={true} onClose={() => {}} todo={{id: 1, title: "Test Todo", tags: [], subtasks: []}} onUpdateTodo={() => {}} />
+        <Register  />
       </BrowserRouter>
     );
     // Add more specific assertions here
