@@ -23,9 +23,13 @@ export function useTodos() {
         tags: t.tags || [],
         position: t.position || 0, // Ensure position exists
         subtasks: t.subtasks
-          ? t.subtasks.sort(
-              (a, b) => new Date(a.created_at) - new Date(b.created_at),
-            )
+          ? t.subtasks.sort((a, b) => {
+               // Sort by position if available, else by created_at
+               if (a.position !== undefined && b.position !== undefined && a.position !== b.position) {
+                   return a.position - b.position;
+               }
+               return new Date(a.created_at) - new Date(b.created_at);
+            })
           : [],
       }));
     },
@@ -173,7 +177,7 @@ export function useTodos() {
     mutationFn: async ({ todoId, title }) => {
       const { error } = await supabase
         .from('subtasks')
-        .insert([{ todo_id: todoId, title }]);
+        .insert([{ todo_id: todoId, title, position: 0 }]); // Default position
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['todos'] }),
@@ -188,6 +192,41 @@ export function useTodos() {
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['todos'] }),
+  });
+
+  const updateSubtaskPositionMutation = useMutation({
+    mutationFn: async ({ id, position }) => {
+      const { error } = await supabase
+        .from('subtasks')
+        .update({ position })
+        .eq('id', id);
+
+      if (error) throw error;
+    },
+    onMutate: async ({ id, position }) => {
+      await queryClient.cancelQueries({ queryKey: ['todos'] });
+      const previousTodos = queryClient.getQueryData(['todos']);
+
+      queryClient.setQueryData(['todos'], (old) => {
+        return old.map((todo) => {
+           if (todo.subtasks.some(s => s.id === id)) {
+               return {
+                   ...todo,
+                   subtasks: todo.subtasks.map(s => s.id === id ? { ...s, position } : s)
+               }
+           }
+           return todo;
+        });
+      });
+
+      return { previousTodos };
+    },
+    onError: (err, newTodo, context) => {
+      queryClient.setQueryData(['todos'], context.previousTodos);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['todos'] });
+    },
   });
 
   const deleteSubtaskMutation = useMutation({
@@ -220,6 +259,7 @@ export function useTodos() {
   const toggleSubtask = (id, completed) =>
     toggleSubtaskMutation.mutate({ id, completed });
   const deleteSubtask = (id) => deleteSubtaskMutation.mutate(id);
+  const updateSubtaskPosition = (id, position) => updateSubtaskPositionMutation.mutate({ id, position });
 
   return {
     todos,
@@ -232,6 +272,7 @@ export function useTodos() {
     addSubtask,
     toggleSubtask,
     deleteSubtask,
+    updateSubtaskPosition,
     loading,
   };
 }

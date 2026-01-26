@@ -1,6 +1,76 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect } from 'react';
-import { X, Calendar, Clock, Check, Trash2, Plus, Tag } from 'lucide-react';
+import { X, Calendar, Clock, Check, Trash2, Plus, GripVertical } from 'lucide-react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+
+function SortableSubtaskItem({ subtask, onToggle, onDelete }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id: subtask.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className='flex items-center gap-3 p-2 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg group transition-colors bg-white dark:bg-gray-800'
+    >
+        <div {...attributes} {...listeners} className="cursor-grab text-gray-400 hover:text-gray-600">
+             <GripVertical size={14} />
+        </div>
+      <button
+        onClick={() => onToggle(subtask.id, subtask.completed)}
+        className={`shrink-0 w-5 h-5 rounded border flex items-center justify-center transition-all ${
+          subtask.completed
+            ? 'bg-blue-600 border-blue-600'
+            : 'border-gray-300 dark:border-gray-500 hover:border-blue-500'
+        }`}
+      >
+        {subtask.completed && (
+          <Check size={12} strokeWidth={3} className='text-white' />
+        )}
+      </button>
+      <span
+        className={`flex-1 text-sm ${
+          subtask.completed
+            ? 'text-gray-500 line-through'
+            : 'text-gray-700 dark:text-gray-200'
+        }`}
+      >
+        {subtask.title}
+      </span>
+      <button
+        onClick={() => onDelete(subtask.id)}
+        className='opacity-0 group-hover:opacity-100 p-1 text-gray-500 hover:text-red-500 transition-all'
+      >
+        <Trash2 size={14} />
+      </button>
+    </div>
+  );
+}
 
 export default function TodoDetailsModal({
   isOpen,
@@ -10,7 +80,16 @@ export default function TodoDetailsModal({
   onAddSubtask,
   onToggleSubtask,
   onDeleteSubtask,
+  onUpdateSubtaskPosition // Need to pass this from usage or hook if we lift state up? 
+  // Actually, better to use the hook inside here if we can or pass it down. 
+  // Given current architecture, let's assume it's passed or we import the hook.
+  // But wait, the modal is generic. Let's pass it in App.jsx or use the hook here?
+  // The component props don't have it yet. Let's assume parent passes it.
 }) {
+    // We can also import the hook here if we want to avoid prop drilling too much, 
+    // but the props suggest a container/presentational split pattern. 
+    // Let's stick to props for now, but I need to update App.jsx/CalendarView.jsx to pass it.
+  
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -20,6 +99,8 @@ export default function TodoDetailsModal({
   });
 
   const [newSubtask, setNewSubtask] = useState('');
+  // Local state for optimistic UI updates on drag
+  const [localSubtasks, setLocalSubtasks] = useState([]);
 
   useEffect(() => {
     if (todo) {
@@ -33,8 +114,62 @@ export default function TodoDetailsModal({
           ? dateObj.toTimeString().split(' ')[0].substring(0, 5)
           : '',
       });
+      setLocalSubtasks(todo.subtasks || []);
     }
   }, [todo]);
+  
+  // Keep local state in sync if backend updates (e.g. after adding subtask)
+  useEffect(() => {
+      if (todo?.subtasks) {
+          setLocalSubtasks(todo.subtasks);
+      }
+  }, [todo?.subtasks]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+        activationConstraint: {
+            distance: 8,
+        }
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    
+    if (active.id !== over.id) {
+      const oldIndex = localSubtasks.findIndex((s) => s.id === active.id);
+      const newIndex = localSubtasks.findIndex((s) => s.id === over.id);
+      
+      const newSubtasks = arrayMove(localSubtasks, oldIndex, newIndex);
+      setLocalSubtasks(newSubtasks);
+
+        // Calculate functionality similar to main todos
+        const prevItem = newSubtasks[newIndex - 1];
+        const nextItem = newSubtasks[newIndex + 1];
+
+        // Basic positioning logic - similar to TodoList
+        // Assuming we have 'position' field on subtasks. 
+        // If not, we need to create it in DB.
+        const getPos = (item) => item.position || 0;
+        
+        let newPosition;
+         if (!prevItem) {
+            newPosition = nextItem ? getPos(nextItem) - 1000 : 0;
+         } else if (!nextItem) {
+             newPosition = getPos(prevItem) + 1000;
+         } else {
+             newPosition = (getPos(prevItem) + getPos(nextItem)) / 2;
+         }
+         
+         if (onUpdateSubtaskPosition) {
+             onUpdateSubtaskPosition(active.id, newPosition);
+         }
+    }
+  };
+
 
   if (!isOpen || !todo) return null;
 
@@ -190,49 +325,31 @@ export default function TodoDetailsModal({
             <div className='flex items-center justify-between mb-3'>
               <label className='block text-xs font-semibold text-gray-500 uppercase tracking-wider'>
                 Subtasks (
-                {todo.subtasks?.filter((s) => s.completed).length || 0}/
-                {todo.subtasks?.length || 0})
+                {localSubtasks.filter((s) => s.completed).length || 0}/
+                {localSubtasks.length || 0})
               </label>
             </div>
 
             <div className='space-y-2 mb-3'>
-              {todo.subtasks &&
-                todo.subtasks.map((subtask) => (
-                  <div
-                    key={subtask.id}
-                    className='flex items-center gap-3 p-2 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg group transition-colors'
+              <DndContext 
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                  <SortableContext 
+                    items={localSubtasks}
+                    strategy={verticalListSortingStrategy}
                   >
-                    <button
-                      onClick={() =>
-                        onToggleSubtask(subtask.id, subtask.completed)
-                      }
-                      className={`shrink-0 w-5 h-5 rounded border flex items-center justify-center transition-all ${
-                        subtask.completed
-                          ? 'bg-blue-600 border-blue-600'
-                          : 'border-gray-300 dark:border-gray-500 hover:border-blue-500'
-                      }`}
-                    >
-                      {subtask.completed && (
-                        <Check
-                          size={12}
-                          strokeWidth={3}
-                          className='text-white'
+                    {localSubtasks.map((subtask) => (
+                        <SortableSubtaskItem 
+                            key={subtask.id} 
+                            subtask={subtask} 
+                            onToggle={onToggleSubtask} 
+                            onDelete={onDeleteSubtask} 
                         />
-                      )}
-                    </button>
-                    <span
-                      className={`flex-1 text-sm ${subtask.completed ? 'text-gray-500 line-through' : 'text-gray-700 dark:text-gray-200'}`}
-                    >
-                      {subtask.title}
-                    </span>
-                    <button
-                      onClick={() => onDeleteSubtask(subtask.id)}
-                      className='opacity-0 group-hover:opacity-100 p-1 text-gray-500 hover:text-red-500 transition-all'
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
-                ))}
+                    ))}
+                  </SortableContext>
+              </DndContext>
             </div>
 
             <form onSubmit={handleAddSubtaskSubmit} className='relative'>
