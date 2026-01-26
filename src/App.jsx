@@ -246,7 +246,7 @@ function TodoApp() {
                 </button>
                 <button
                   onClick={() => setIsToolsOpen(!isToolsOpen)}
-                  className={`px-4 rounded-lg border transition-colors flex items-center justify-center ${
+                  className={`px-4 py-3 rounded-lg border transition-colors flex items-center justify-center ${
                     isToolsOpen
                       ? 'bg-blue-50 border-blue-200 text-blue-600 dark:bg-blue-900/30 dark:border-blue-800 dark:text-blue-300'
                       : 'border-gray-200 text-gray-500 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700'
