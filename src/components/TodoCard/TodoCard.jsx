@@ -1,6 +1,88 @@
-import { useState } from 'react';
-import { Check, Trash2, Clock, Plus, X, Tag, Sparkles } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Check, Trash2, Clock, Plus, X, Tag, Sparkles, GripVertical } from 'lucide-react';
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { getAISuggestions } from '../../lib/openai';
+
+function SortableSubtaskItem({ subtask, onToggle, onDelete }) {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: subtask.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  const handlePointerDown = (e) => {
+    // Stop propagation to prevent Parent Card drag
+    e.stopPropagation();
+    // Pass event to dnd-kit listener
+    listeners.onPointerDown(e);
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className='flex items-center gap-2 group'
+    >
+      <div
+        className='text-gray-300 hover:text-gray-500 cursor-grab active:cursor-grabbing p-0.5 -ml-1 touch-none opacity-0 group-hover:opacity-100 transition-opacity'
+        onPointerDown={handlePointerDown}
+        {...attributes}
+      >
+        <GripVertical size={12} />
+      </div>
+      <button
+        type='button'
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggle(subtask.id, subtask.completed);
+        }}
+        aria-label={`Mark subtask "${subtask.title}" as ${subtask.completed ? 'incomplete' : 'complete'}`}
+        className={`shrink-0 w-4 h-4 rounded border flex items-center justify-center transition-colors ${
+          subtask.completed
+            ? 'bg-blue-500 border-blue-500 text-white'
+            : 'border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400'
+        }`}
+      >
+        {subtask.completed && <Check size={10} strokeWidth={3} />}
+      </button>
+      <span
+        className={`flex-1 text-sm truncate ${
+          subtask.completed
+            ? 'text-gray-500 line-through decoration-gray-300'
+            : 'text-gray-700 dark:text-gray-300'
+        }`}
+      >
+        {subtask.title}
+      </span>
+      <button
+        type='button'
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete(subtask.id);
+        }}
+        className='opacity-0 group-hover:opacity-100 p-1 text-gray-500 hover:text-red-500 transition-all'
+        aria-label={`Delete subtask "${subtask.title}"`}
+      >
+        <X size={12} />
+      </button>
+    </div>
+  );
+}
 
 export default function TodoCard({
   todo,
@@ -10,6 +92,7 @@ export default function TodoCard({
   onAddSubtask,
   onToggleSubtask,
   onDeleteSubtask,
+  onUpdateSubtaskPosition,
   onClick,
 }) {
   const [isAddingSubtask, setIsAddingSubtask] = useState(false);
@@ -17,6 +100,56 @@ export default function TodoCard({
   const [isAddingTag, setIsAddingTag] = useState(false);
   const [newTag, setNewTag] = useState('');
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+  
+  // Optimistic Subtasks State
+  const [localSubtasks, setLocalSubtasks] = useState([]);
+
+  useEffect(() => {
+    if (todo.subtasks) {
+      setLocalSubtasks(todo.subtasks);
+    } else {
+        setLocalSubtasks([]);
+    }
+  }, [todo.subtasks]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+        activationConstraint: {
+            distance: 8,
+        }
+    })
+  );
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    
+    if (active.id !== over.id) {
+      const oldIndex = localSubtasks.findIndex((s) => s.id === active.id);
+      const newIndex = localSubtasks.findIndex((s) => s.id === over.id);
+      
+      const newSubtasks = arrayMove(localSubtasks, oldIndex, newIndex);
+      setLocalSubtasks(newSubtasks);
+
+        const prevItem = newSubtasks[newIndex - 1];
+        const nextItem = newSubtasks[newIndex + 1];
+
+        const getPos = (item) => item.position || 0;
+        
+        let newPosition;
+         if (!prevItem) {
+            newPosition = nextItem ? getPos(nextItem) - 1000 : 0;
+         } else if (!nextItem) {
+             newPosition = getPos(prevItem) + 1000;
+         } else {
+             newPosition = (getPos(prevItem) + getPos(nextItem)) / 2;
+         }
+         
+         if (onUpdateSubtaskPosition) {
+             onUpdateSubtaskPosition(active.id, newPosition);
+         }
+    }
+  };
+
 
   const handleAddSubtask = (e) => {
     e.preventDefault();
@@ -223,45 +356,25 @@ export default function TodoCard({
 
         {/* List */}
         <div className='space-y-2'>
-          {todo.subtasks?.map((subtask) => (
-            <div key={subtask.id} className='flex items-center gap-2 group'>
-              <button
-                type='button'
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggleSubtask(subtask.id, subtask.completed);
-                }}
-                aria-label={`Mark subtask "${subtask.title}" as ${subtask.completed ? 'incomplete' : 'complete'}`}
-                className={`shrink-0 w-4 h-4 rounded border flex items-center justify-center transition-colors ${
-                  subtask.completed
-                    ? 'bg-blue-500 border-blue-500 text-white'
-                    : 'border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400'
-                }`}
-              >
-                {subtask.completed && <Check size={10} strokeWidth={3} />}
-              </button>
-              <span
-                className={`flex-1 text-sm truncate ${
-                  subtask.completed
-                    ? 'text-gray-500 line-through decoration-gray-300'
-                    : 'text-gray-700 dark:text-gray-300'
-                }`}
-              >
-                {subtask.title}
-              </span>
-              <button
-                type='button'
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDeleteSubtask(subtask.id);
-                }}
-                className='opacity-0 group-hover:opacity-100 p-1 text-gray-500 hover:text-red-500 transition-all'
-                aria-label={`Delete subtask "${subtask.title}"`}
-              >
-                <X size={12} />
-              </button>
-            </div>
-          ))}
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={localSubtasks}
+              strategy={verticalListSortingStrategy}
+            >
+              {localSubtasks.map((subtask) => (
+                <SortableSubtaskItem
+                  key={subtask.id}
+                  subtask={subtask}
+                  onToggle={onToggleSubtask}
+                  onDelete={onDeleteSubtask}
+                />
+              ))}
+            </SortableContext>
+          </DndContext>
         </div>
 
         {/* Add Subtask Input */}

@@ -407,6 +407,7 @@ function TodoApp() {
                           onAddSubtask={addSubtask}
                           onToggleSubtask={toggleSubtask}
                           onDeleteSubtask={deleteSubtask}
+                          onUpdateSubtaskPosition={updateSubtaskPosition}
                           onClick={() => setSelectedTodoId(todo.id)}
                         />
                       ))}
@@ -425,6 +426,7 @@ function TodoApp() {
                       onAddSubtask={addSubtask}
                       onToggleSubtask={toggleSubtask}
                       onDeleteSubtask={deleteSubtask}
+                      onUpdateSubtaskPosition={updateSubtaskPosition}
                       onClick={() => setSelectedTodoId(todo.id)}
                     />
                   ))}
