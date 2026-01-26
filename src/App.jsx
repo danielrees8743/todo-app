@@ -28,6 +28,7 @@ import WeatherWidget from './components/WeatherWidget/WeatherWidget';
 import DataMigration from './components/DataMigration/DataMigration';
 import UserProfile from './components/UserProfile/UserProfile';
 import PomodoroTimer from './components/PomodoroTimer/PomodoroTimer';
+import CalendarView from './components/CalendarView/CalendarView';
 import { useTodos } from './hooks/useTodos';
 import { supabase } from './lib/supabase';
 
@@ -519,6 +520,19 @@ function App() {
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
               <TodoApp />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/calendar'
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <div className='min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200'>
+                <Header />
+                <main className='flex-1 max-w-7xl w-full mx-auto p-6 h-[calc(100vh-100px)]'>
+                  <CalendarView />
+                </main>
+              </div>
             </ProtectedRoute>
           }
         />

@@ -38,6 +38,7 @@ A powerful, feature-rich task management application built with modern web techn
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 - **State/Data**: [TanStack Query (React Query)](https://tanstack.com/query/latest)
 - **Drag & Drop**: [dnd-kit](https://dndkit.com/)
+- **Calendar**: [react-big-calendar](https://github.com/jquense/react-big-calendar)
 - **Icons**: [Lucide React](https://lucide.dev/)
 - **Routing**: [React Router](https://reactrouter.com/)
 

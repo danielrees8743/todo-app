@@ -8,6 +8,7 @@ import {
   AlertCircle,
   Search,
   X,
+  Calendar,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ThemeToggle from '../ThemeToggle/ThemeToggle';
@@ -101,7 +102,7 @@ export default function Header({ searchQuery, onSearch }) {
 
   return (
     <header className='flex items-center justify-between px-6 py-4 bg-white dark:bg-gray-800 shadow-md transition-colors duration-200'>
-      <div className='flex items-center gap-3'>
+      <div className='flex items-center gap-6'>
         <Link
           to='/'
           className='flex items-center gap-3 hover:opacity-80 transition-opacity'
@@ -113,6 +114,23 @@ export default function Header({ searchQuery, onSearch }) {
             TaskMaster
           </h1>
         </Link>
+
+        <nav className='flex items-center gap-1 border-l border-gray-200 dark:border-gray-700 pl-4 h-8'>
+          <Link
+            to='/'
+            className='p-1.5 text-gray-500 hover:bg-gray-100 hover:text-blue-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-blue-400 rounded-lg transition-colors'
+            title='List View'
+          >
+            <ListTodo size={20} />
+          </Link>
+          <Link
+            to='/calendar'
+            className='p-1.5 text-gray-500 hover:bg-gray-100 hover:text-blue-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-blue-400 rounded-lg transition-colors'
+            title='Calendar View'
+          >
+            <Calendar size={20} />
+          </Link>
+        </nav>
       </div>
 
       {upcomingTask && (
