@@ -215,7 +215,7 @@ export default function AIChat({
             </p>
           </div>
         </div>
-        <div className='flex items-center gap-2 text-gray-400'>
+        <div className='flex items-center gap-2 text-gray-500'>
           {isOpen && (
             <button
               type='button'
@@ -278,7 +278,7 @@ export default function AIChat({
                   <Dog className='w-5 h-5 text-black dark:text-gray-200' />
                 </div>
                 <div className='bg-gray-100 dark:bg-gray-700 rounded-2xl rounded-bl-none px-4 py-2 flex items-center'>
-                  <Loader2 size={16} className='animate-spin text-gray-500' />
+                  <Loader2 size={16} className='animate-spin text-gray-600' />
                 </div>
               </div>
             )}

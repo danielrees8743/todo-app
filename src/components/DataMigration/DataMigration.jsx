@@ -96,7 +96,7 @@ export default function DataMigration() {
           <h3 className='font-semibold text-gray-900 dark:text-white'>
             Local Data Detected
           </h3>
-          <p className='text-sm text-gray-600 dark:text-gray-400 mt-1'>
+          <p className='text-sm text-gray-700 dark:text-gray-300 mt-1'>
             Found {localTodos.length} tasks in your browser storage. Would you
             like to migrate them to your account?
           </p>

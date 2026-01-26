@@ -62,7 +62,7 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }) {
           <button
             type='button'
             onClick={onClose}
-            className='text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors'
+            className='text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-colors'
             aria-label='Close modal'
           >
             <X size={24} />
@@ -149,7 +149,7 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }) {
                         : p === 'Medium'
                           ? 'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-900'
                           : 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-900'
-                      : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
+                      : 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
                   }`}
                 >
                   {p}
@@ -176,7 +176,7 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }) {
                   value={formData.dueDate}
                   onChange={handleChange}
                 />
-                <Calendar className='absolute left-3 top-2.5 h-5 w-5 text-gray-400 pointer-events-none' />
+                <Calendar className='absolute left-3 top-2.5 h-5 w-5 text-gray-500 pointer-events-none' />
               </div>
             </div>
 
@@ -196,7 +196,7 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }) {
                   value={formData.dueTime}
                   onChange={handleChange}
                 />
-                <Clock className='absolute left-3 top-2.5 h-5 w-5 text-gray-400 pointer-events-none' />
+                <Clock className='absolute left-3 top-2.5 h-5 w-5 text-gray-500 pointer-events-none' />
               </div>
             </div>
           </div>

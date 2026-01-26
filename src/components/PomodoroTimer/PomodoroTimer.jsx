@@ -189,7 +189,7 @@ export default function PomodoroTimer() {
           <button
             type='button'
             onClick={() => setSoundEnabled(!soundEnabled)}
-            className={`p-1.5 rounded transition-colors mr-1 ${soundEnabled ? 'text-orange-600 dark:text-orange-300' : 'text-gray-400 dark:text-gray-500'}`}
+            className={`p-1.5 rounded transition-colors mr-1 ${soundEnabled ? 'text-orange-600 dark:text-orange-300' : 'text-gray-500 dark:text-gray-400'}`}
             title={soundEnabled ? 'Mute Sounds' : 'Enable Sounds'}
             aria-label={soundEnabled ? 'Mute Sounds' : 'Enable Sounds'}
           >
@@ -251,7 +251,7 @@ export default function PomodoroTimer() {
         <button
           type='button'
           onClick={resetTimer}
-          className='flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md text-sm font-medium transition-colors'
+          className='flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md text-sm font-medium transition-colors'
         >
           <RotateCcw size={16} />
           Reset

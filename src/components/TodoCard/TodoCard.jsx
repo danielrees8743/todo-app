@@ -101,7 +101,7 @@ export default function TodoCard({
         <h3
           className={`font-semibold text-lg truncate pr-2 ${
             todo.completed
-              ? 'text-gray-500 line-through dark:text-gray-500'
+              ? 'text-gray-600 line-through dark:text-gray-400'
               : 'text-gray-800 dark:text-white'
           }`}
         >
@@ -122,7 +122,7 @@ export default function TodoCard({
 
       <p
         className={`text-sm mb-4 line-clamp-2 ${
-          todo.completed ? 'text-gray-400' : 'text-gray-600 dark:text-gray-400'
+          todo.completed ? 'text-gray-500' : 'text-gray-700 dark:text-gray-300'
         }`}
       >
         {todo.description || 'No description provided'}
@@ -177,7 +177,7 @@ export default function TodoCard({
             <button
               type='button'
               onClick={() => setIsAddingTag(false)}
-              className='text-gray-400 hover:text-gray-600'
+              className='text-gray-500 hover:text-gray-700'
               aria-label='Cancel adding tag'
             >
               <X size={12} />
@@ -192,8 +192,8 @@ export default function TodoCard({
             }}
             className={`flex items-center gap-1 transition-colors ${
               todo.tags && todo.tags.length > 0
-                ? 'p-0.5 text-gray-400 hover:text-blue-500'
-                : 'px-2 py-0.5 text-xs font-medium text-gray-500 hover:text-blue-600 bg-gray-50 hover:bg-blue-50 rounded-md border border-dashed border-gray-300 hover:border-blue-300 dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-400 dark:hover:text-blue-400 dark:hover:border-blue-800'
+                ? 'p-0.5 text-gray-500 hover:text-blue-500'
+                : 'px-2 py-0.5 text-xs font-medium text-gray-600 hover:text-blue-600 bg-gray-50 hover:bg-blue-50 rounded-md border border-dashed border-gray-300 hover:border-blue-300 dark:bg-gray-800/50 dark:border-gray-700 dark:text-gray-300 dark:hover:text-blue-400 dark:hover:border-blue-800'
             }`}
             title='Add tag'
             aria-label='Add tag'
@@ -215,7 +215,7 @@ export default function TodoCard({
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <span className='text-xs text-gray-400 font-medium'>
+            <span className='text-xs text-gray-500 font-medium'>
               {completedSubtasks}/{totalSubtasks}
             </span>
           </div>
@@ -243,7 +243,7 @@ export default function TodoCard({
               <span
                 className={`flex-1 text-sm truncate ${
                   subtask.completed
-                    ? 'text-gray-400 line-through decoration-gray-300'
+                    ? 'text-gray-500 line-through decoration-gray-300'
                     : 'text-gray-700 dark:text-gray-300'
                 }`}
               >
@@ -255,7 +255,7 @@ export default function TodoCard({
                   e.stopPropagation();
                   onDeleteSubtask(subtask.id);
                 }}
-                className='opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-500 transition-all'
+                className='opacity-0 group-hover:opacity-100 p-1 text-gray-500 hover:text-red-500 transition-all'
                 aria-label={`Delete subtask "${subtask.title}"`}
               >
                 <X size={12} />
@@ -290,7 +290,7 @@ export default function TodoCard({
             <button
               type='button'
               onClick={() => setIsAddingSubtask(false)}
-              className='p-1 text-gray-400 hover:bg-gray-100 rounded'
+              className='p-1 text-gray-500 hover:bg-gray-100 rounded'
               aria-label='Cancel adding subtask'
             >
               <X size={14} />
@@ -304,7 +304,7 @@ export default function TodoCard({
                 e.stopPropagation();
                 setIsAddingSubtask(true);
               }}
-              className='flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors'
+              className='flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors'
             >
               <Plus size={14} />
               Add Subtask
@@ -332,7 +332,7 @@ export default function TodoCard({
       </div>
 
       <div className='flex flex-col gap-2 mt-auto pt-2 border-t border-gray-100 dark:border-gray-700'>
-        <div className='flex items-center justify-between text-xs text-gray-400 dark:text-gray-500'>
+        <div className='flex items-center justify-between text-xs text-gray-500 dark:text-gray-400'>
           <div className='flex items-center' title='Created date'>
             <span className='mr-1'>Created:</span>
             {new Date(todo.createdAt).toLocaleDateString()}
@@ -364,7 +364,7 @@ export default function TodoCard({
             className={`p-1.5 rounded-lg transition-colors ${
               todo.completed
                 ? 'bg-green-100 text-green-600 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400'
-                : 'bg-gray-100 text-gray-400 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600'
+                : 'bg-gray-100 text-gray-500 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
             }`}
             title={todo.completed ? 'Mark as incomplete' : 'Mark as complete'}
             aria-label={

@@ -46,7 +46,7 @@ export default function Login() {
           <h2 className='mt-6 text-3xl font-bold tracking-tight text-gray-900 dark:text-white'>
             Sign in to your account
           </h2>
-          <p className='mt-2 text-sm text-gray-600 dark:text-gray-400'>
+          <p className='mt-2 text-sm text-gray-700 dark:text-gray-300'>
             Or{' '}
             <Link
               to='/register'
@@ -73,7 +73,7 @@ export default function Login() {
                 type='email'
                 autoComplete='email'
                 required
-                className='relative block w-full rounded-t-md border-0 py-1.5 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:bg-gray-700 dark:placeholder-gray-400 sm:text-sm sm:leading-6 px-3'
+                className='relative block w-full rounded-t-md border-0 py-1.5 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-500 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:bg-gray-700 dark:placeholder-gray-400 sm:text-sm sm:leading-6 px-3'
                 placeholder='Email address'
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -89,7 +89,7 @@ export default function Login() {
                 type='password'
                 autoComplete='current-password'
                 required
-                className='relative block w-full rounded-b-md border-0 py-1.5 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:bg-gray-700 dark:placeholder-gray-400 sm:text-sm sm:leading-6 px-3'
+                className='relative block w-full rounded-b-md border-0 py-1.5 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-500 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:bg-gray-700 dark:placeholder-gray-400 sm:text-sm sm:leading-6 px-3'
                 placeholder='Password'
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

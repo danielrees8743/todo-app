@@ -81,7 +81,7 @@ export default function TodoDetailsModal({
           </h2>
           <button
             onClick={onClose}
-            className='text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors'
+            className='text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-colors'
           >
             <X size={24} />
           </button>
@@ -92,7 +92,7 @@ export default function TodoDetailsModal({
           {/* Title & Description */}
           <div className='space-y-4'>
             <div>
-              <label className='block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2'>
+              <label className='block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2'>
                 Title
               </label>
               <input
@@ -105,7 +105,7 @@ export default function TodoDetailsModal({
             </div>
 
             <div>
-              <label className='block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2'>
+              <label className='block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2'>
                 Description
               </label>
               <textarea
@@ -122,13 +122,13 @@ export default function TodoDetailsModal({
           <div className='space-y-6'>
             {/* Due Date & Time */}
             <div className='space-y-4'>
-              <label className='block text-xs font-semibold text-gray-400 uppercase tracking-wider'>
+              <label className='block text-xs font-semibold text-gray-500 uppercase tracking-wider'>
                 Due Date
               </label>
               <div className='flex gap-2'>
                 <div className='relative flex-1'>
                   <Calendar
-                    className='absolute left-3 top-2.5 text-gray-400 dark:text-gray-300 pointer-events-none'
+                    className='absolute left-3 top-2.5 text-gray-500 dark:text-gray-300 pointer-events-none'
                     size={16}
                   />
                   <input
@@ -141,7 +141,7 @@ export default function TodoDetailsModal({
                 </div>
                 <div className='relative w-32'>
                   <Clock
-                    className='absolute left-3 top-2.5 text-gray-400 dark:text-gray-300 pointer-events-none'
+                    className='absolute left-3 top-2.5 text-gray-500 dark:text-gray-300 pointer-events-none'
                     size={16}
                   />
                   <input
@@ -157,7 +157,7 @@ export default function TodoDetailsModal({
 
             {/* Priority */}
             <div className='space-y-4'>
-              <label className='block text-xs font-semibold text-gray-400 uppercase tracking-wider'>
+              <label className='block text-xs font-semibold text-gray-500 uppercase tracking-wider'>
                 Priority
               </label>
               <div className='flex gap-2'>
@@ -173,7 +173,7 @@ export default function TodoDetailsModal({
                           : p === 'Medium'
                             ? 'bg-yellow-50 border-yellow-200 text-yellow-700 dark:bg-yellow-900/20 dark:border-yellow-800 dark:text-yellow-300'
                             : 'bg-green-50 border-green-200 text-green-700 dark:bg-green-900/20 dark:border-green-800 dark:text-green-300'
-                        : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                        : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                     }`}
                   >
                     {p}
@@ -188,7 +188,7 @@ export default function TodoDetailsModal({
           {/* Subtasks */}
           <div>
             <div className='flex items-center justify-between mb-3'>
-              <label className='block text-xs font-semibold text-gray-400 uppercase tracking-wider'>
+              <label className='block text-xs font-semibold text-gray-500 uppercase tracking-wider'>
                 Subtasks (
                 {todo.subtasks?.filter((s) => s.completed).length || 0}/
                 {todo.subtasks?.length || 0})
@@ -221,13 +221,13 @@ export default function TodoDetailsModal({
                       )}
                     </button>
                     <span
-                      className={`flex-1 text-sm ${subtask.completed ? 'text-gray-400 line-through' : 'text-gray-700 dark:text-gray-200'}`}
+                      className={`flex-1 text-sm ${subtask.completed ? 'text-gray-500 line-through' : 'text-gray-700 dark:text-gray-200'}`}
                     >
                       {subtask.title}
                     </span>
                     <button
                       onClick={() => onDeleteSubtask(subtask.id)}
-                      className='opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-500 transition-all'
+                      className='opacity-0 group-hover:opacity-100 p-1 text-gray-500 hover:text-red-500 transition-all'
                     >
                       <Trash2 size={14} />
                     </button>
@@ -244,7 +244,7 @@ export default function TodoDetailsModal({
                 placeholder='Add a subtask...'
               />
               <Plus
-                className='absolute left-3 top-2.5 text-gray-400'
+                className='absolute left-3 top-2.5 text-gray-500'
                 size={18}
               />
             </form>
@@ -255,7 +255,7 @@ export default function TodoDetailsModal({
         <div className='p-6 border-t border-gray-100 dark:border-gray-700 shrink-0 flex justify-end gap-3'>
           <button
             onClick={onClose}
-            className='px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors'
+            className='px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors'
           >
             Cancel
           </button>

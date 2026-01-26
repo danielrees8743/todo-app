@@ -108,9 +108,9 @@ export default function WeatherWidget() {
     // WMO Weather interpretation codes (https://open-meteo.com/en/docs)
     if (code === 0) return <Sun className='w-8 h-8 text-yellow-500' />;
     if (code >= 1 && code <= 3)
-      return <Cloud className='w-8 h-8 text-gray-400' />;
+      return <Cloud className='w-8 h-8 text-gray-500' />;
     if (code >= 45 && code <= 48)
-      return <CloudFog className='w-8 h-8 text-gray-400' />;
+      return <CloudFog className='w-8 h-8 text-gray-500' />;
     if (code >= 51 && code <= 67)
       return <CloudRain className='w-8 h-8 text-blue-400' />;
     if (code >= 71 && code <= 77)
@@ -141,7 +141,7 @@ export default function WeatherWidget() {
           <button
             type='button'
             onClick={handleCurrentLocation}
-            className='absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-blue-500 hover:bg-gray-200 dark:text-gray-500 dark:hover:text-blue-400 dark:hover:bg-gray-800 rounded-md transition-all'
+            className='absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-500 hover:text-blue-500 hover:bg-gray-200 dark:text-gray-400 dark:hover:text-blue-400 dark:hover:bg-gray-800 rounded-md transition-all'
             title='Use Current Location'
             aria-label='Use Current Location'
           >
@@ -170,14 +170,14 @@ export default function WeatherWidget() {
 
       {!loading && weatherData ? (
         <div className='text-center'>
-          <div className='flex items-center justify-center gap-1 text-gray-500 dark:text-gray-400 text-sm mb-2'>
+          <div className='flex items-center justify-center gap-1 text-gray-600 dark:text-gray-300 text-sm mb-2'>
             <MapPin size={14} />
             <span className='truncate max-w-50'>{weatherData.city}</span>
           </div>
 
           <div className='flex flex-col items-center gap-2 mb-2'>
             {getWeatherIcon(weatherData.code)}
-            <span className='text-xs font-medium text-gray-500 dark:text-gray-400'>
+            <span className='text-xs font-medium text-gray-600 dark:text-gray-300'>
               {getWeatherDescription(weatherData.code)}
             </span>
             <span className='text-4xl font-bold text-gray-900 dark:text-white'>
@@ -185,7 +185,7 @@ export default function WeatherWidget() {
             </span>
           </div>
 
-          <div className='flex items-center justify-center gap-2 text-sm text-gray-600 dark:text-gray-300 bg-blue-50 dark:bg-blue-900/20 py-1.5 px-3 rounded-full mx-auto'>
+          <div className='flex items-center justify-center gap-2 text-sm text-gray-700 dark:text-gray-300 bg-blue-50 dark:bg-blue-900/20 py-1.5 px-3 rounded-full mx-auto'>
             <Droplets size={14} className='text-blue-500' />
             <span>{weatherData.precipChance}% chance of rain</span>
           </div>
@@ -193,7 +193,7 @@ export default function WeatherWidget() {
       ) : (
         !loading &&
         !weatherData && (
-          <div className='text-center text-gray-400 text-sm py-4'>
+          <div className='text-center text-gray-500 text-sm py-4'>
             No weather data available.
           </div>
         )
