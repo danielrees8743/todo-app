@@ -7,7 +7,7 @@ export default function ForgotPassword() {
         <h2 className='text-2xl font-bold text-gray-900 dark:text-white'>
           Reset Password
         </h2>
-        <p className='mt-2 text-gray-600 dark:text-gray-400'>
+        <p className='mt-2 text-gray-700 dark:text-gray-300'>
           This is a placeholder for the password reset form.
         </p>
         <Link

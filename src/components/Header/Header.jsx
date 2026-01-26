@@ -130,7 +130,7 @@ export default function Header({ searchQuery, onSearch }) {
 
       <div className='flex items-center gap-4'>
         <div className='relative hidden sm:block'>
-          <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400' />
+          <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500' />
           <input
             type='text'
             placeholder='Search tasks...'
@@ -143,7 +143,7 @@ export default function Header({ searchQuery, onSearch }) {
             <button
               type='button'
               onClick={() => onSearch('')}
-              className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200'
+              className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-200'
               aria-label='Clear search'
             >
               <X size={14} />
@@ -171,7 +171,7 @@ export default function Header({ searchQuery, onSearch }) {
         <button
           type='button'
           onClick={handleLogout}
-          className='flex items-center gap-2 p-2 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700'
+          className='flex items-center gap-2 p-2 text-gray-600 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700'
           title='Sign out'
           aria-label='Sign out'
         >

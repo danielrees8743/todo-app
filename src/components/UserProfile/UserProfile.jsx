@@ -265,7 +265,7 @@ export default function UserProfile() {
             to='/'
             className='p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-full transition-colors'
           >
-            <ArrowLeft className='w-6 h-6 text-gray-600 dark:text-gray-300' />
+            <ArrowLeft className='w-6 h-6 text-gray-700 dark:text-gray-300' />
           </Link>
           <h1 className='text-3xl font-bold text-gray-900 dark:text-white'>
             Account Settings
@@ -275,7 +275,7 @@ export default function UserProfile() {
         {/* Stats Cards */}
         <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-8'>
           <div className='bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700'>
-            <h3 className='text-sm font-medium text-gray-500 dark:text-gray-400'>
+            <h3 className='text-sm font-medium text-gray-600 dark:text-gray-300'>
               Total Tasks
             </h3>
             <p className='text-3xl font-bold text-gray-900 dark:text-white mt-2'>
@@ -283,7 +283,7 @@ export default function UserProfile() {
             </p>
           </div>
           <div className='bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700'>
-            <h3 className='text-sm font-medium text-gray-500 dark:text-gray-400'>
+            <h3 className='text-sm font-medium text-gray-600 dark:text-gray-300'>
               Completed
             </h3>
             <p className='text-3xl font-bold text-green-600 dark:text-green-400 mt-2'>
@@ -291,7 +291,7 @@ export default function UserProfile() {
             </p>
           </div>
           <div className='bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700'>
-            <h3 className='text-sm font-medium text-gray-500 dark:text-gray-400'>
+            <h3 className='text-sm font-medium text-gray-600 dark:text-gray-300'>
               Completion Rate
             </h3>
             <p className='text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2'>
@@ -363,7 +363,7 @@ export default function UserProfile() {
                     ) : (
                       <Camera
                         size={16}
-                        className='text-gray-600 dark:text-gray-300'
+                        className='text-gray-700 dark:text-gray-300'
                       />
                     )}
                   </label>
@@ -499,7 +499,7 @@ export default function UserProfile() {
               </h3>
               <button
                 onClick={cancelCrop}
-                className='text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors'
+                className='text-gray-600 hover:text-gray-700 dark:hover:text-gray-400 transition-colors'
               >
                 <X size={20} />
               </button>
@@ -522,7 +522,7 @@ export default function UserProfile() {
             </div>
 
             <div className='p-4 space-y-6 bg-white dark:bg-gray-800 z-10'>
-              <div className='flex items-center gap-3 text-gray-600 dark:text-gray-300'>
+              <div className='flex items-center gap-3 text-gray-700 dark:text-gray-300'>
                 <ZoomOut size={16} />
                 <input
                   type='range'

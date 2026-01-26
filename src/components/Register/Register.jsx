@@ -70,7 +70,7 @@ export default function Register({ onRegister }) {
           <h2 className='mt-6 text-3xl font-bold tracking-tight text-gray-900 dark:text-white'>
             Create your account
           </h2>
-          <p className='mt-2 text-sm text-gray-600 dark:text-gray-400'>
+          <p className='mt-2 text-sm text-gray-700 dark:text-gray-300'>
             Already have an account?{' '}
             <Link
               to='/login'
@@ -103,7 +103,7 @@ export default function Register({ onRegister }) {
                   type='text'
                   autoComplete='name'
                   required
-                  className='block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:bg-gray-700 dark:placeholder-gray-400 sm:text-sm sm:leading-6 px-3'
+                  className='block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:bg-gray-700 dark:placeholder-gray-400 sm:text-sm sm:leading-6 px-3'
                   value={formData.name}
                   onChange={handleChange}
                 />
@@ -124,7 +124,7 @@ export default function Register({ onRegister }) {
                   type='email'
                   autoComplete='email'
                   required
-                  className='block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:bg-gray-700 dark:placeholder-gray-400 sm:text-sm sm:leading-6 px-3'
+                  className='block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:bg-gray-700 dark:placeholder-gray-400 sm:text-sm sm:leading-6 px-3'
                   value={formData.email}
                   onChange={handleChange}
                 />
@@ -145,7 +145,7 @@ export default function Register({ onRegister }) {
                   type='password'
                   autoComplete='new-password'
                   required
-                  className='block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:bg-gray-700 dark:placeholder-gray-400 sm:text-sm sm:leading-6 px-3'
+                  className='block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:bg-gray-700 dark:placeholder-gray-400 sm:text-sm sm:leading-6 px-3'
                   value={formData.password}
                   onChange={handleChange}
                 />
@@ -166,7 +166,7 @@ export default function Register({ onRegister }) {
                   type='password'
                   autoComplete='new-password'
                   required
-                  className='block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:bg-gray-700 dark:placeholder-gray-400 sm:text-sm sm:leading-6 px-3'
+                  className='block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:bg-gray-700 dark:placeholder-gray-400 sm:text-sm sm:leading-6 px-3'
                   value={formData.confirmPassword}
                   onChange={handleChange}
                 />
