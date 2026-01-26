@@ -23,7 +23,7 @@ This document tracks application features, implementation notes, and completion 
 | 15  | AI Integration         | AI Assistant                         | Integrate AI into the app (Bear Chatbot & Subtask Suggestions)                                                 | ✅   |
 | 16  | Weather Widget         | Weather forecasting                  | Local weather + city search using Open-Meteo API. Includes temperature, condition icons, and rain probability. | ✅   |
 | 17  | Productivity Dashboard | Analyze productivity stats           | Charts for completion rates, focus minutes (Pomodoro), and streaks. (Recharts/Chart.js)                        | ⬜   |
-| 18  | Calendar View          | Visual deadline planning             | Monthly/Weekly calendar with drag-and-drop rescheduling. (react-big-calendar/FullCalendar)                     | ⬜   |
+| 18  | Calendar View          | Visual deadline planning             | Monthly/Weekly calendar with drag-and-drop rescheduling. (react-big-calendar)                                  | ✅   |
 | 19  | Collaborative Lists    | Real-time sharing                    | Share lists with other users, invite via email, see live updates. (Supabase Realtime)                          | ⬜   |
 
 ## Status Legend
