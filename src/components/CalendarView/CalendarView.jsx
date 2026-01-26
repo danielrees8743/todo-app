@@ -32,6 +32,7 @@ const CalendarView = () => {
     addSubtask,
     toggleSubtask,
     deleteSubtask,
+    updateSubtaskPosition,
   } = useTodos();
   const [selectedTodoId, setSelectedTodoId] = useState(null);
 
@@ -39,18 +40,18 @@ const CalendarView = () => {
     return todos
       .filter((todo) => todo.dueDateTime) // Only show tasks with due dates
       .map((todo) => {
-          const start = new Date(todo.dueDateTime);
-          // Default to 1 hour duration if end time not specified (our todos only have one timestamp usually)
-          const end = new Date(start.getTime() + 60 * 60 * 1000); 
-          return {
-            id: todo.id,
-            title: todo.title,
-            start,
-            end,
-            allDay: false, 
-            resource: todo,
-            // Could set color based on priority
-          };
+        const start = new Date(todo.dueDateTime);
+        // Default to 1 hour duration if end time not specified (our todos only have one timestamp usually)
+        const end = new Date(start.getTime() + 60 * 60 * 1000);
+        return {
+          id: todo.id,
+          title: todo.title,
+          start,
+          end,
+          allDay: false,
+          resource: todo,
+          // Could set color based on priority
+        };
       });
   }, [todos]);
 
@@ -59,7 +60,7 @@ const CalendarView = () => {
   };
 
   const onEventResize = ({ event, start, end }) => {
-     updateTodoDetails(event.id, { due_datetime: start.toISOString() });
+    updateTodoDetails(event.id, { due_datetime: start.toISOString() });
   };
 
   const onSelectEvent = (event) => {
@@ -72,21 +73,21 @@ const CalendarView = () => {
   );
 
   return (
-    <div className="h-full flex flex-col p-4 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-      <h2 className="text-2xl font-bold mb-4">Calendar View</h2>
-      <div className="flex-1 min-h-0 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg shadow p-2">
-         {/* Note: react-big-calendar default styles might need dark mode overrides or invert */}
+    <div className='h-full flex flex-col p-4 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100'>
+      <h2 className='text-2xl font-bold mb-4'>Calendar View</h2>
+      <div className='flex-1 min-h-0 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg shadow p-2'>
+        {/* Note: react-big-calendar default styles might need dark mode overrides or invert */}
         <DnDCalendar
           localizer={localizer}
           events={events}
-          startAccessor="start"
-          endAccessor="end"
+          startAccessor='start'
+          endAccessor='end'
           style={{ height: '100%', minHeight: '500px' }}
           onEventDrop={onEventDrop}
           onEventResize={onEventResize}
           onSelectEvent={onSelectEvent}
           resizable
-          defaultView="month"
+          defaultView='month'
           views={['month', 'week', 'day', 'agenda']}
           popup
         />
@@ -100,6 +101,7 @@ const CalendarView = () => {
         onAddSubtask={addSubtask}
         onToggleSubtask={toggleSubtask}
         onDeleteSubtask={deleteSubtask}
+        onUpdateSubtaskPosition={updateSubtaskPosition}
       />
     </div>
   );

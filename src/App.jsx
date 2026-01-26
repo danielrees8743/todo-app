@@ -44,6 +44,7 @@ function TodoApp() {
     addSubtask,
     toggleSubtask,
     deleteSubtask,
+    updateSubtaskPosition,
     loading,
   } = useTodos();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -467,6 +468,7 @@ function TodoApp() {
         onAddSubtask={addSubtask}
         onToggleSubtask={toggleSubtask}
         onDeleteSubtask={deleteSubtask}
+        onUpdateSubtaskPosition={updateSubtaskPosition}
       />
 
       <DataMigration />

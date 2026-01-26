@@ -54,3 +54,18 @@ create policy "Users can CRUD their own subtasks"
 -- Add a position column (float allows inserting between items easily)
 alter table public.todos
 add column position double precision default 0;
+
+-- 5. For Subtask Drag & Drop
+-- Add 'position' column to subtasks for ordering
+alter table public.subtasks
+add column if not exists position double precision default 0;
+
+-- Optional: Initialize positions for existing subtasks
+with indexed_subtasks as (
+  select id, row_number() over (partition by todo_id order by created_at) as rn
+  from public.subtasks
+)
+update public.subtasks s
+set position = i.rn * 1000
+from indexed_subtasks i
+where s.id = i.id;
