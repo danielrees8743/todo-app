@@ -187,24 +187,30 @@ export default function PomodoroTimer() {
         </h3>
         <div className='flex gap-1 items-center'>
           <button
+            type='button'
             onClick={() => setSoundEnabled(!soundEnabled)}
             className={`p-1.5 rounded transition-colors mr-1 ${soundEnabled ? 'text-orange-600 dark:text-orange-300' : 'text-gray-400 dark:text-gray-500'}`}
             title={soundEnabled ? 'Mute Sounds' : 'Enable Sounds'}
+            aria-label={soundEnabled ? 'Mute Sounds' : 'Enable Sounds'}
           >
             {soundEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
           </button>
           <div className='w-px h-4 bg-orange-200 dark:bg-orange-800 mx-1'></div>
           <button
+            type='button'
             onClick={() => switchMode('work')}
             className={`p-1.5 rounded transition-colors ${mode === 'work' ? 'bg-orange-200 text-orange-800 dark:bg-orange-800 dark:text-orange-100' : 'text-orange-400 hover:bg-orange-100 dark:hover:bg-orange-800/50'}`}
             title='Work Mode'
+            aria-label='Switch to Work Mode'
           >
             <Briefcase size={14} />
           </button>
           <button
+            type='button'
             onClick={() => switchMode('break')}
             className={`p-1.5 rounded transition-colors ${mode === 'break' ? 'bg-orange-200 text-orange-800 dark:bg-orange-800 dark:text-orange-100' : 'text-orange-400 hover:bg-orange-100 dark:hover:bg-orange-800/50'}`}
             title='Break Mode'
+            aria-label='Switch to Break Mode'
           >
             <Coffee size={14} />
           </button>
@@ -235,6 +241,7 @@ export default function PomodoroTimer() {
 
       <div className='flex justify-center gap-3'>
         <button
+          type='button'
           onClick={toggleTimer}
           className='flex items-center gap-1.5 px-3 py-1.5 bg-orange-600 hover:bg-orange-700 text-white rounded-md text-sm font-medium transition-colors'
         >
@@ -242,6 +249,7 @@ export default function PomodoroTimer() {
           {isActive ? 'Pause' : 'Start'}
         </button>
         <button
+          type='button'
           onClick={resetTimer}
           className='flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md text-sm font-medium transition-colors'
         >

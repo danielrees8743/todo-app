@@ -134,14 +134,17 @@ export default function Header({ searchQuery, onSearch }) {
           <input
             type='text'
             placeholder='Search tasks...'
+            aria-label='Search tasks'
             value={searchQuery}
             onChange={(e) => onSearch(e.target.value)}
             className='w-48 lg:w-64 pl-9 pr-4 py-2 bg-gray-100 dark:bg-gray-700 border-none rounded-lg text-sm text-gray-700 dark:text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all'
           />
           {searchQuery && (
             <button
+              type='button'
               onClick={() => onSearch('')}
               className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200'
+              aria-label='Clear search'
             >
               <X size={14} />
             </button>
@@ -166,9 +169,11 @@ export default function Header({ searchQuery, onSearch }) {
           </div>
         </Link>
         <button
+          type='button'
           onClick={handleLogout}
           className='flex items-center gap-2 p-2 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700'
           title='Sign out'
+          aria-label='Sign out'
         >
           <LogOut size={20} />
         </button>

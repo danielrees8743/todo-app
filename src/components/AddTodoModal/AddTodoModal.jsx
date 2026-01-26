@@ -60,8 +60,10 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }) {
             Add New Task
           </h2>
           <button
+            type='button'
             onClick={onClose}
             className='text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors'
+            aria-label='Close modal'
           >
             <X size={24} />
           </button>

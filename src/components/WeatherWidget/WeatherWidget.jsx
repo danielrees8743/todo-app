@@ -135,6 +135,7 @@ export default function WeatherWidget() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder='Search city...'
+            aria-label='Search city'
             className='w-full h-10 pl-3 pr-10 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all'
           />
           <button
@@ -142,6 +143,7 @@ export default function WeatherWidget() {
             onClick={handleCurrentLocation}
             className='absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-blue-500 hover:bg-gray-200 dark:text-gray-500 dark:hover:text-blue-400 dark:hover:bg-gray-800 rounded-md transition-all'
             title='Use Current Location'
+            aria-label='Use Current Location'
           >
             <Locate size={16} />
           </button>
@@ -150,6 +152,7 @@ export default function WeatherWidget() {
           type='submit'
           disabled={loading}
           className='h-10 w-10 flex items-center justify-center bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 shadow-sm'
+          aria-label='Search weather'
         >
           {loading ? (
             <Loader2 size={18} className='animate-spin' />

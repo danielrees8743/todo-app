@@ -218,9 +218,11 @@ export default function AIChat({
         <div className='flex items-center gap-2 text-gray-400'>
           {isOpen && (
             <button
+              type='button'
               onClick={handleClearChat}
               className='p-1.5 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors mr-2'
               title='Clear Chat History'
+              aria-label='Clear Chat History'
             >
               <Trash2 size={16} />
             </button>
@@ -293,12 +295,14 @@ export default function AIChat({
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder='Ask Bear for help...'
+              aria-label='Chat message'
               className='flex-1 px-4 py-2 rounded-lg bg-gray-50 dark:bg-gray-900 border-none focus:ring-2 focus:ring-indigo-500/50 outline-none text-sm dark:text-white transition-all'
             />
             <button
               type='submit'
               disabled={!input.trim() || isLoading}
               className='p-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
+              aria-label='Send message'
             >
               <Send size={18} />
             </button>
