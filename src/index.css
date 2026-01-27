@@ -3,11 +3,29 @@
 @variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-primary: #3b82f6;
+  /* Modern + Casual Color Palette */
+  --color-primary: #7c3aed;        /* Warm violet - friendly, not corporate */
+  --color-primary-light: #a78bfa;
+  --color-primary-dark: #5b21b6;
+
+  --color-accent: #f97316;         /* Warm orange - energetic, casual */
+  --color-accent-light: #fb923c;
+
+  --color-success: #10b981;        /* Teal green - fresh */
+  --color-warning: #f59e0b;        /* Amber */
+  --color-danger: #ef4444;
+
+  /* Warm neutrals instead of cold grays */
+  --color-surface: #faf9f7;        /* Warm off-white */
+  --color-surface-dark: #1c1917;   /* Warm dark (stone-900) */
+
+  /* Typography */
+  --font-sans: 'Space Grotesk', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Space Grotesk', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -21,4 +39,48 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+}
+
+/* Casual hover effects - softer, friendlier */
+.hover-lift {
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Smooth page transitions */
+.page-enter {
+  animation: fadeSlideIn 0.3s ease-out;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Friendly focus states */
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
