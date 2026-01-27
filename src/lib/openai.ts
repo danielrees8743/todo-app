@@ -1,6 +1,5 @@
 // src/lib/openai.ts
 // OpenAI calls are proxied through Supabase Edge Functions to keep API keys secure
-import { supabase } from './supabase';
 import type { ChatCompletionMessageParam, ChatCompletionMessage } from 'openai/resources/chat/completions';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -70,11 +69,11 @@ export const chatWithBear = async (
     const data = await response.json();
     return data.message;
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error chatting with Bear:', error);
 
     // Handle rate limit errors
-    if (error?.message?.includes('429') || error?.message?.includes('quota')) {
+    if (error instanceof Error && (error.message.includes('429') || error.message.includes('quota'))) {
       return {
         role: 'assistant',
         content: "I'm a bit overwhelmed right now (Rate Limit Exceeded). But I'm still here to cheer you on!",

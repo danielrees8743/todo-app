@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Play,
   Pause,
@@ -25,7 +25,7 @@ export default function PomodoroTimer() {
   // Use ref to manage AudioContext to comply with browser policies
   const audioContextRef = useRef<AudioContext | null>(null);
 
-  const playSound = (type: 'warning' | 'complete') => {
+  const playSound = useCallback((type: 'warning' | 'complete') => {
     if (!soundEnabled) return;
 
     try {
@@ -113,7 +113,7 @@ export default function PomodoroTimer() {
     } catch (e) {
       console.error('Audio play failed', e);
     }
-  };
+  }, [soundEnabled]);
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval> | null = null;
@@ -141,7 +141,7 @@ export default function PomodoroTimer() {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isActive, minutes, seconds]);
+  }, [isActive, minutes, seconds, playSound]);
 
   const toggleTimer = () => {
     // Initialize audio context on user interaction
