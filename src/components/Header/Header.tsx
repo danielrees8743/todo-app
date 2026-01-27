@@ -25,6 +25,7 @@ export default function Header({ searchQuery = '', onSearch }: HeaderProps) {
   const { todos } = useTodos();
   const [upcomingTask, setUpcomingTask] = useState<Todo | null>(null);
   const [timeLeft, setTimeLeft] = useState('');
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
 
   const { data: user } = useQuery({
     queryKey: ['user'],
@@ -116,6 +117,7 @@ export default function Header({ searchQuery = '', onSearch }: HeaderProps) {
   };
 
   return (
+    <>
     <header className='flex items-center justify-between px-6 py-4 bg-white dark:bg-stone-800 shadow-sm border-b border-stone-100 dark:border-stone-700 transition-colors duration-200'>
       <div className='flex items-center gap-6'>
         <Link
@@ -133,14 +135,14 @@ export default function Header({ searchQuery = '', onSearch }: HeaderProps) {
         <nav className='flex items-center gap-1 border-l border-stone-200 dark:border-stone-700 pl-4 h-8'>
           <Link
             to='/'
-            className='p-2 text-stone-500 hover:bg-stone-100 hover:text-violet-600 dark:text-stone-400 dark:hover:bg-stone-700 dark:hover:text-violet-400 rounded-xl transition-colors'
+            className='p-2 text-stone-500 hover:bg-stone-100 hover:text-violet-600 dark:text-stone-400 dark:hover:bg-stone-700 dark:hover:text-violet-400 rounded-xl transition-all hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-stone-800'
             title='List View'
           >
             <ListTodo size={20} />
           </Link>
           <Link
             to='/calendar'
-            className='p-2 text-stone-500 hover:bg-stone-100 hover:text-violet-600 dark:text-stone-400 dark:hover:bg-stone-700 dark:hover:text-violet-400 rounded-xl transition-colors'
+            className='p-2 text-stone-500 hover:bg-stone-100 hover:text-violet-600 dark:text-stone-400 dark:hover:bg-stone-700 dark:hover:text-violet-400 rounded-xl transition-all hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-stone-800'
             title='Calendar View'
           >
             <Calendar size={20} />
@@ -162,6 +164,7 @@ export default function Header({ searchQuery = '', onSearch }: HeaderProps) {
       )}
 
       <div className='flex items-center gap-4'>
+        {/* Desktop Search */}
         <div className='relative hidden sm:block'>
           <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400' />
           <input
@@ -183,10 +186,21 @@ export default function Header({ searchQuery = '', onSearch }: HeaderProps) {
             </button>
           )}
         </div>
+
+        {/* Mobile Search Button */}
+        <button
+          type='button'
+          onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
+          className='sm:hidden p-2.5 text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-stone-700 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-stone-800 hover:scale-105 active:scale-95'
+          aria-label='Toggle search'
+        >
+          <Search size={20} />
+        </button>
+
         <ThemeToggle />
         <Link
           to='/profile'
-          className='flex items-center gap-2 hover:opacity-80 transition-opacity'
+          className='flex items-center gap-2 hover:opacity-80 transition-all hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-stone-800 rounded-xl'
           title='Profile'
         >
           <div className='w-9 h-9 rounded-xl bg-linear-to-br from-violet-500 to-fuchsia-500 text-white flex items-center justify-center text-sm font-semibold shadow-sm overflow-hidden'>
@@ -204,7 +218,7 @@ export default function Header({ searchQuery = '', onSearch }: HeaderProps) {
         <button
           type='button'
           onClick={handleLogout}
-          className='flex items-center gap-2 p-2 text-stone-500 hover:text-red-500 dark:text-stone-400 dark:hover:text-red-400 transition-colors rounded-xl hover:bg-stone-100 dark:hover:bg-stone-700'
+          className='flex items-center gap-2 p-2 text-stone-500 hover:text-red-500 dark:text-stone-400 dark:hover:text-red-400 transition-all rounded-xl hover:bg-stone-100 dark:hover:bg-stone-700 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-stone-800'
           title='Sign out'
           aria-label='Sign out'
         >
@@ -212,5 +226,34 @@ export default function Header({ searchQuery = '', onSearch }: HeaderProps) {
         </button>
       </div>
     </header>
+
+    {/* Mobile Search Overlay */}
+    {isMobileSearchOpen && (
+      <div className='sm:hidden px-6 py-3 bg-white dark:bg-stone-800 border-b border-stone-100 dark:border-stone-700 animate-in slide-in-from-top duration-200'>
+        <div className='relative'>
+          <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400' />
+          <input
+            type='text'
+            placeholder='Search tasks...'
+            aria-label='Search tasks'
+            value={searchQuery}
+            onChange={handleSearchChange}
+            autoFocus
+            className='w-full pl-9 pr-10 py-3 bg-stone-100 dark:bg-stone-700 border-none rounded-xl text-sm text-stone-700 dark:text-stone-200 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-violet-500/50 transition-all'
+          />
+          {searchQuery && (
+            <button
+              type='button'
+              onClick={handleClearSearch}
+              className='absolute right-2 top-1/2 -translate-y-1/2 min-w-[44px] min-h-[44px] flex items-center justify-center text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 rounded-lg hover:bg-stone-200 dark:hover:bg-stone-600 transition-all hover:scale-105 active:scale-95'
+              aria-label='Clear search'
+            >
+              <X size={16} />
+            </button>
+          )}
+        </div>
+      </div>
+    )}
+    </>
   );
 }

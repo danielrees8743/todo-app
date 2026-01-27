@@ -200,7 +200,7 @@ export default function TodoCard({
               e.stopPropagation();
               setIsAddingTag(true);
             }}
-            className={`flex items-center gap-1 transition-colors ${
+            className={`flex items-center gap-1 transition-all hover:scale-105 active:scale-95 ${
               todo.tags && todo.tags.length > 0
                 ? 'p-0.5 text-stone-400 hover:text-violet-500'
                 : 'px-2.5 py-1 text-xs font-medium text-stone-500 hover:text-violet-600 bg-stone-50 hover:bg-violet-50 rounded-lg border border-dashed border-stone-300 hover:border-violet-300 dark:bg-stone-800/50 dark:border-stone-700 dark:text-stone-300 dark:hover:text-violet-400 dark:hover:border-violet-800'
@@ -242,13 +242,17 @@ export default function TodoCard({
                   onToggleSubtask(subtask.id, subtask.completed);
                 }}
                 aria-label={`Mark subtask "${subtask.title}" as ${subtask.completed ? 'incomplete' : 'complete'}`}
-                className={`shrink-0 w-4 h-4 rounded-md border flex items-center justify-center transition-colors ${
-                  subtask.completed
-                    ? 'bg-violet-500 border-violet-500 text-white'
-                    : 'border-stone-300 dark:border-stone-600 hover:border-violet-500 dark:hover:border-violet-400'
-                }`}
+                className='shrink-0 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-stone-100 dark:hover:bg-stone-700 transition-all hover:scale-105 active:scale-95'
               >
-                {subtask.completed && <Check size={10} strokeWidth={3} />}
+                <div
+                  className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-colors ${
+                    subtask.completed
+                      ? 'bg-violet-500 border-violet-500 text-white'
+                      : 'border-stone-300 dark:border-stone-600 hover:border-violet-500 dark:hover:border-violet-400'
+                  }`}
+                >
+                  {subtask.completed && <Check size={12} strokeWidth={3} />}
+                </div>
               </button>
               <span
                 className={`flex-1 text-sm truncate ${
@@ -314,7 +318,7 @@ export default function TodoCard({
                 e.stopPropagation();
                 setIsAddingSubtask(true);
               }}
-              className='flex items-center gap-1.5 text-xs font-medium text-stone-500 hover:text-violet-600 dark:text-stone-400 dark:hover:text-violet-400 transition-colors'
+              className='flex items-center gap-1.5 text-xs font-medium text-stone-500 hover:text-violet-600 dark:text-stone-400 dark:hover:text-violet-400 transition-all hover:scale-105 active:scale-95'
             >
               <Plus size={14} />
               Add Subtask
@@ -324,10 +328,10 @@ export default function TodoCard({
               type='button'
               onClick={handleGenerateSubtasks}
               disabled={isGeneratingAI}
-              className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${
+              className={`flex items-center gap-1.5 text-xs font-medium transition-all ${
                 isGeneratingAI
                   ? 'text-fuchsia-400 cursor-wait'
-                  : 'text-fuchsia-500 hover:text-fuchsia-600 dark:text-fuchsia-400 dark:hover:text-fuchsia-300'
+                  : 'text-fuchsia-500 hover:text-fuchsia-600 dark:text-fuchsia-400 dark:hover:text-fuchsia-300 hover:scale-105 active:scale-95'
               }`}
               title='Generate subtasks with AI'
             >
@@ -371,7 +375,7 @@ export default function TodoCard({
               e.stopPropagation();
               onToggle(todo.id);
             }}
-            className={`p-2 rounded-xl transition-all ${
+            className={`p-3 rounded-xl transition-all hover:scale-105 active:scale-95 ${
               todo.completed
                 ? 'bg-emerald-100 text-emerald-600 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400'
                 : 'bg-stone-100 text-stone-500 hover:bg-violet-100 hover:text-violet-600 dark:bg-stone-700 dark:text-stone-300 dark:hover:bg-violet-900/30 dark:hover:text-violet-400'
@@ -383,7 +387,7 @@ export default function TodoCard({
                 : `Mark "${todo.title}" as complete`
             }
           >
-            <Check size={16} />
+            <Check size={18} />
           </button>
 
           <button
@@ -392,11 +396,11 @@ export default function TodoCard({
               e.stopPropagation();
               onDelete(todo.id);
             }}
-            className='p-2 rounded-xl bg-rose-50 text-rose-400 hover:bg-rose-100 hover:text-rose-500 dark:bg-rose-900/20 dark:hover:bg-rose-900/40 transition-all'
+            className='p-3 rounded-xl bg-rose-50 text-rose-400 hover:bg-rose-100 hover:text-rose-500 dark:bg-rose-900/20 dark:hover:bg-rose-900/40 transition-all hover:scale-105 active:scale-95'
             title='Delete task'
             aria-label={`Delete task "${todo.title}"`}
           >
-            <Trash2 size={16} />
+            <Trash2 size={18} />
           </button>
         </div>
       </div>
