@@ -62,11 +62,12 @@ This document tracks application features, implementation notes, and completion 
 
 | #   | Enhancement Name              | Description                          | Implementation Details                                                                                         | Done |
 | --- | ----------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------- | ---- |
-| 33  | Fine-tuning                   | Custom model training                | Train gpt-4o-mini on high-quality conversation data for todo-specific optimization                             | ⬜   |
-| 34  | Prompt Versioning             | A/B test prompts                     | Database-backed prompt management with versioning and performance tracking                                     | ⬜   |
-| 35  | Advanced Context (RAG)        | Retrieval-augmented generation       | Vector store for dynamic context selection, support for 1000s of tasks, long-term memory                      | ⬜   |
-| 36  | Cost Optimization             | Reduce API expenses                  | Response caching, batch API calls, smart model selection, token budgets                                        | ⬜   |
-| 37  | Quality Monitoring            | Track AI performance                 | Metrics dashboard, alerting system, SLA tracking, real-time monitoring                                         | ⬜   |
+| 33  | AI Rate Limiting              | Prevent abuse and manage costs       | Three-layer protection: client throttling (2s), retry logic (3x), server limits (20/min per user)             | ✅   |
+| 34  | Fine-tuning                   | Custom model training                | Train gpt-4o-mini on high-quality conversation data for todo-specific optimization                             | ⬜   |
+| 35  | Prompt Versioning             | A/B test prompts                     | Database-backed prompt management with versioning and performance tracking                                     | ⬜   |
+| 36  | Advanced Context (RAG)        | Retrieval-augmented generation       | Vector store for dynamic context selection, support for 1000s of tasks, long-term memory                      | ⬜   |
+| 37  | Cost Optimization             | Reduce API expenses                  | Response caching, batch API calls, smart model selection, token budgets                                        | ⬜   |
+| 38  | Quality Monitoring            | Track AI performance                 | Metrics dashboard, alerting system, SLA tracking, real-time monitoring                                         | ⬜   |
 
 ## Status Legend
 
