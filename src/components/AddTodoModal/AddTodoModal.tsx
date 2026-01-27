@@ -178,7 +178,7 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
             <label className='block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2'>
               Due Date
             </label>
-            <div className='flex flex-col sm:flex-row gap-3'>
+            <div className='flex flex-col md:flex-row gap-3'>
               <div className='relative flex-1'>
                 <input
                   type='date'

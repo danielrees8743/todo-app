@@ -276,7 +276,7 @@ export default function TodoDetailsModal({
               <label className='block text-xs font-semibold text-stone-500 uppercase tracking-wider'>
                 Due Date
               </label>
-              <div className='flex flex-col sm:flex-row gap-3'>
+              <div className='flex flex-col md:flex-row gap-3'>
                 <div className='relative flex-1'>
                   <Calendar
                     className='absolute left-3 top-3 text-stone-500 dark:text-stone-300 pointer-events-none'
