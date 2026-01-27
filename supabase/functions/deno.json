@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
+  },
+  "imports": {
+    "openai": "https://esm.sh/openai@4.52.0"
+  }
+}

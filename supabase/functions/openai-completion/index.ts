@@ -19,18 +19,14 @@ serve(async (req) => {
   }
 
   try {
-    const apiKey = Deno.env.get('OPENAI_API_KEY');
+    // Try both with and without space (there's a trailing space in the secret name)
+    const apiKey = Deno.env.get('OPENAI_API_KEY') || Deno.env.get('OPENAI_API_KEY ') || Deno.env.get('OPEN_API_KEY');
 
-    // Debug log - remove after testing
+    // Debug log
     console.log('API Key available:', apiKey ? 'Yes' : 'No');
-    console.log('API Key length:', apiKey?.length || 0);
-
-    if (!apiKey) {
-      throw new Error('OPENAI_API_KEY environment variable is not set');
-    }
 
     const openai = new OpenAI({
-      apiKey: apiKey,
+      apiKey: apiKey || undefined,
     });
 
     const { action, messages, taskDescription, todoContext } = await req.json();
