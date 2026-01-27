@@ -115,8 +115,8 @@ function TodoApp() {
 
   if (loading) {
     return (
-      <div className='flex h-screen items-center justify-center bg-gray-50 dark:bg-gray-900'>
-        <div className='h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent'></div>
+      <div className='flex h-screen items-center justify-center bg-stone-50 dark:bg-stone-900'>
+        <div className='h-10 w-10 animate-spin rounded-full border-4 border-violet-500 border-t-transparent'></div>
       </div>
     );
   }
@@ -214,7 +214,7 @@ function TodoApp() {
   const selectedTodo = todos.find((t) => t.id === selectedTodoId);
 
   return (
-    <div className='min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200 flex flex-col'>
+    <div className='min-h-screen bg-stone-50 dark:bg-stone-900 transition-colors duration-200 flex flex-col'>
       <Header searchQuery={searchQuery} onSearch={setSearchQuery} />
 
       <main className='flex-1 max-w-7xl w-full mx-auto p-6'>
@@ -223,21 +223,21 @@ function TodoApp() {
           <div className='lg:col-span-1 space-y-6'>
             <WeatherWidget />
 
-            <div className='bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6'>
+            <div className='bg-white dark:bg-stone-800 rounded-2xl shadow-sm p-6 border border-stone-100 dark:border-stone-700'>
               <div className='flex gap-2 mb-6'>
                 <button
                   onClick={() => setIsModalOpen(true)}
-                  className='flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors shadow-sm'
+                  className='flex-1 flex items-center justify-center gap-2 bg-violet-500 hover:bg-violet-600 text-white py-3 px-4 rounded-xl font-medium transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5'
                 >
                   <Plus size={20} />
                   Add New Task
                 </button>
                 <button
                   onClick={() => setIsToolsOpen(!isToolsOpen)}
-                  className={`px-4 py-3 rounded-lg border transition-colors flex items-center justify-center ${
+                  className={`px-4 py-3 rounded-xl border transition-all flex items-center justify-center ${
                     isToolsOpen
-                      ? 'bg-blue-50 border-blue-200 text-blue-600 dark:bg-blue-900/30 dark:border-blue-800 dark:text-blue-300'
-                      : 'border-gray-200 text-gray-500 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700'
+                      ? 'bg-violet-50 border-violet-200 text-violet-600 dark:bg-violet-900/30 dark:border-violet-800 dark:text-violet-300'
+                      : 'border-stone-200 text-stone-500 hover:bg-stone-50 dark:border-stone-700 dark:text-stone-400 dark:hover:bg-stone-700'
                   }`}
                   title='Tools'
                 >
@@ -247,7 +247,7 @@ function TodoApp() {
 
               {isToolsOpen && (
                 <div className='mb-6 animate-in slide-in-from-top-2 duration-200'>
-                  <div className='text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2'>
+                  <div className='text-xs font-semibold text-stone-400 uppercase tracking-wider mb-2'>
                     Tools
                   </div>
                   <div className='grid grid-cols-1 gap-1'>
@@ -257,10 +257,10 @@ function TodoApp() {
                           activeTool === 'pomodoro' ? null : 'pomodoro',
                         )
                       }
-                      className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center justify-between ${
+                      className={`w-full text-left px-3 py-2.5 rounded-xl text-sm transition-all flex items-center justify-between ${
                         activeTool === 'pomodoro'
                           ? 'bg-orange-50 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 font-medium'
-                          : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                          : 'text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-700/50'
                       }`}
                     >
                       Pomodoro Timer
@@ -276,8 +276,8 @@ function TodoApp() {
                 </div>
               )}
 
-              <div className='space-y-2'>
-                <h3 className='text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3'>
+              <div className='space-y-1.5'>
+                <h3 className='text-xs font-semibold text-stone-400 uppercase tracking-wider mb-3'>
                   Filters
                 </h3>
                 {(['All Tasks', 'Important', 'Completed', 'Today'] as const).map(
@@ -285,18 +285,18 @@ function TodoApp() {
                     <button
                       key={filter}
                       onClick={() => setActiveFilter(filter)}
-                      className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center justify-between group ${
+                      className={`w-full text-left px-3 py-2.5 rounded-xl text-sm transition-all flex items-center justify-between group ${
                         activeFilter === filter
-                          ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 font-medium'
-                          : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                          ? 'bg-violet-50 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300 font-medium shadow-sm'
+                          : 'text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-700/50'
                       }`}
                     >
                       {filter}
                       <span
-                        className={`text-xs py-0.5 px-2 rounded-full transition-colors ${
+                        className={`text-xs py-0.5 px-2.5 rounded-full transition-colors font-medium ${
                           activeFilter === filter
-                            ? 'bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-200'
-                            : 'bg-gray-100 dark:bg-gray-700 text-gray-500 group-hover:bg-gray-200 dark:group-hover:bg-gray-600'
+                            ? 'bg-violet-100 text-violet-700 dark:bg-violet-800 dark:text-violet-200'
+                            : 'bg-stone-100 dark:bg-stone-700 text-stone-500 group-hover:bg-stone-200 dark:group-hover:bg-stone-600'
                         }`}
                       >
                         {getFilterCount(filter)}
@@ -307,11 +307,11 @@ function TodoApp() {
               </div>
             </div>
 
-            <div className='bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 border border-blue-100 dark:border-blue-900/30'>
-              <h3 className='text-blue-800 dark:text-blue-200 font-semibold mb-2'>
+            <div className='bg-linear-to-br from-violet-50 to-fuchsia-50 dark:from-violet-900/20 dark:to-fuchsia-900/20 rounded-2xl p-6 border border-violet-100 dark:border-violet-900/30'>
+              <h3 className='text-violet-800 dark:text-violet-200 font-semibold mb-2'>
                 Pro Tip
               </h3>
-              <p className='text-sm text-blue-600 dark:text-blue-300/80'>
+              <p className='text-sm text-violet-600 dark:text-violet-300/80'>
                 Break down large tasks into smaller subtasks to maintain
                 momentum and track progress better.
               </p>
@@ -328,17 +328,17 @@ function TodoApp() {
             />
 
             <div className='flex items-center justify-between mb-6'>
-              <h2 className='text-2xl font-bold text-gray-800 dark:text-white'>
+              <h2 className='text-2xl font-bold text-stone-800 dark:text-white tracking-tight'>
                 {activeFilter}
               </h2>
               <div className='relative' ref={sortMenuRef}>
                 <button
                   onClick={() => setIsSortMenuOpen(!isSortMenuOpen)}
-                  className='flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800'
+                  className='flex items-center gap-2 text-sm text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-200 transition-colors px-3 py-2 rounded-xl hover:bg-stone-100 dark:hover:bg-stone-800'
                 >
                   <Filter size={16} />
                   Sort by:{' '}
-                  <span className='font-medium text-gray-700 dark:text-gray-300'>
+                  <span className='font-medium text-stone-700 dark:text-stone-300'>
                     {sortBy}
                   </span>
                   <ChevronDown
@@ -348,7 +348,7 @@ function TodoApp() {
                 </button>
 
                 {isSortMenuOpen && (
-                  <div className='absolute right-0 top-full mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 py-1 z-10 animate-in fade-in zoom-in-95 duration-100'>
+                  <div className='absolute right-0 top-full mt-2 w-48 bg-white dark:bg-stone-800 rounded-2xl shadow-lg border border-stone-100 dark:border-stone-700 py-2 z-10 animate-in fade-in zoom-in-95 duration-100'>
                     {(['Custom', 'Newest', 'Oldest', 'Priority', 'Due Date'] as const).map(
                       (option) => (
                         <button
@@ -357,10 +357,10 @@ function TodoApp() {
                             setSortBy(option);
                             setIsSortMenuOpen(false);
                           }}
-                          className={`w-full text-left px-4 py-2 text-sm flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${
+                          className={`w-full text-left px-4 py-2.5 text-sm flex items-center justify-between hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors ${
                             sortBy === option
-                              ? 'text-blue-600 dark:text-blue-400 font-medium'
-                              : 'text-gray-700 dark:text-gray-300'
+                              ? 'text-violet-600 dark:text-violet-400 font-medium'
+                              : 'text-stone-700 dark:text-stone-300'
                           }`}
                         >
                           {option}
@@ -419,20 +419,20 @@ function TodoApp() {
                 </div>
               )
             ) : (
-              <div className='text-center py-20 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-dashed border-gray-200 dark:border-gray-700'>
-                <div className='bg-gray-50 dark:bg-gray-900/50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4'>
-                  <Plus size={24} className='text-gray-400' />
+              <div className='text-center py-20 bg-white dark:bg-stone-800 rounded-2xl shadow-sm border-2 border-dashed border-stone-200 dark:border-stone-700'>
+                <div className='bg-violet-50 dark:bg-violet-900/30 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4'>
+                  <Plus size={24} className='text-violet-500' />
                 </div>
-                <h3 className='text-lg font-medium text-gray-900 dark:text-white'>
+                <h3 className='text-lg font-semibold text-stone-900 dark:text-white'>
                   No tasks yet
                 </h3>
-                <p className='text-gray-500 dark:text-gray-400 max-w-sm mx-auto mt-2'>
+                <p className='text-stone-500 dark:text-stone-400 max-w-sm mx-auto mt-2'>
                   Get started by creating a new task to track your progress and
                   stay organized.
                 </p>
                 <button
                   onClick={() => setIsModalOpen(true)}
-                  className='mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors'
+                  className='mt-6 px-5 py-2.5 bg-violet-500 text-white rounded-xl text-sm font-medium hover:bg-violet-600 transition-all hover:shadow-md hover:-translate-y-0.5'
                 >
                   Create Task
                 </button>
@@ -495,8 +495,8 @@ function App() {
 
   if (isAuthenticated === null) {
     return (
-      <div className='flex h-screen items-center justify-center bg-gray-50 dark:bg-gray-900'>
-        <div className='h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent'></div>
+      <div className='flex h-screen items-center justify-center bg-stone-50 dark:bg-stone-900'>
+        <div className='h-10 w-10 animate-spin rounded-full border-4 border-violet-500 border-t-transparent'></div>
       </div>
     );
   }
@@ -522,7 +522,7 @@ function App() {
           path='/calendar'
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <div className='min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200'>
+              <div className='min-h-screen bg-stone-50 dark:bg-stone-900 transition-colors duration-200'>
                 <Header />
                 <main className='flex-1 max-w-7xl w-full mx-auto p-6 h-[calc(100vh-100px)]'>
                   <CalendarView />
