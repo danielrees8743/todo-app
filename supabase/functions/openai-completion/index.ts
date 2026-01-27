@@ -1,7 +1,11 @@
-// OpenAI Completion Proxy - Updated Jan 27, 2026
+// AI Completion Proxy - Ollama + OpenAI Hybrid - Updated Jan 27, 2026
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import OpenAI from 'https://esm.sh/openai@4.52.0';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+
+// Ollama configuration
+const OLLAMA_URL = Deno.env.get('OLLAMA_URL') || 'http://host.docker.internal:11434';
+const OLLAMA_MODEL = 'llama3.2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -46,6 +50,44 @@ const checkRateLimit = (userId: string): { allowed: boolean; retryAfter?: number
 
   userLimit.count++;
   return { allowed: true };
+};
+
+// Helper function to call Ollama
+const callOllama = async (messages: Array<{ role: string; content: string }>) => {
+  try {
+    const response = await fetch(`${OLLAMA_URL}/api/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: OLLAMA_MODEL,
+        messages: messages,
+        stream: false,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Ollama error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.message.content;
+  } catch (error) {
+    console.error('Ollama API error:', error);
+    throw error;
+  }
+};
+
+// Helper to detect if a message needs tool calling
+const needsToolCalling = (userMessage: string): boolean => {
+  const toolKeywords = [
+    'add', 'create', 'new task', 'remind me',
+    'mark', 'complete', 'done', 'finish',
+    'weather in', 'weather for', 'temperature in',
+    'break down', 'subtask'
+  ];
+
+  const lowerMessage = userMessage.toLowerCase();
+  return toolKeywords.some(keyword => lowerMessage.includes(keyword));
 };
 
 serve(async (req) => {
@@ -156,6 +198,60 @@ serve(async (req) => {
         hour12: true
       });
       const formattedDateTime = `${formattedDate} at ${formattedTime}`;
+
+      // Get last user message to determine routing
+      const lastUserMessage = messages[messages.length - 1]?.content || '';
+      const requiresTools = needsToolCalling(lastUserMessage);
+
+      console.log('Chat request - Requires tools:', requiresTools, 'Message:', lastUserMessage.substring(0, 50));
+
+      // Use Ollama for general chat, OpenAI for tool calling
+      if (!requiresTools) {
+        // Use Ollama for general conversation
+        try {
+          const systemMessage = {
+            role: 'system',
+            content: `You are Bear, a friendly and helpful AI assistant for a todo list application.
+
+CURRENT CONTEXT:
+- Current date/time: ${formattedDateTime}
+- Day of week: ${dayOfWeek}
+- User's todo list and weather information:
+${todoContext || 'No tasks yet'}
+
+RESPONSE STYLE:
+- Be concise and friendly
+- Use the user's todo list context to provide relevant answers
+- Reference current weather from context when relevant
+- When referencing tasks, use their exact titles
+- For temporal queries, calculate relative to current date
+- Suggest priorities and scheduling when appropriate
+- IMPORTANT: Never mention internal IDs or database keys in your responses
+
+Remember: You have access to the user's complete todo list and can reference it in your responses.`,
+          };
+
+          const ollamaMessages = [systemMessage, ...messages];
+          const content = await callOllama(ollamaMessages);
+
+          // Return in OpenAI-compatible format
+          const message = {
+            role: 'assistant',
+            content: content,
+          };
+
+          console.log('✓ Ollama response generated (free)');
+          return new Response(JSON.stringify({ message }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        } catch (ollamaError) {
+          console.error('Ollama failed, falling back to OpenAI:', ollamaError);
+          // Fall through to OpenAI below
+        }
+      }
+
+      // Use OpenAI for tool calling or if Ollama failed
+      console.log('Using OpenAI for tool calling');
 
       const systemMessage = {
         role: 'system',
