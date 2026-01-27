@@ -248,6 +248,25 @@ export default function UserProfile() {
 
   const handleProfileSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Validate username length (database constraint requires >= 3 characters)
+    if (formData.username && formData.username.trim().length > 0 && formData.username.trim().length < 3) {
+      setMessage({
+        type: 'error',
+        text: 'Username must be at least 3 characters long',
+      });
+      return;
+    }
+
+    // Validate username max length
+    if (formData.username && formData.username.length > 30) {
+      setMessage({
+        type: 'error',
+        text: 'Username must be 30 characters or less',
+      });
+      return;
+    }
+
     updateProfileMutation.mutate(formData);
   };
 
@@ -395,7 +414,7 @@ export default function UserProfile() {
               </div>
 
               <div>
-                <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                <label className='block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1'>
                   Full Name
                 </label>
                 <input
@@ -403,27 +422,30 @@ export default function UserProfile() {
                   name='full_name'
                   value={formData.full_name}
                   onChange={handleChange}
-                  className='w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none'
+                  className='w-full px-4 py-2 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none transition-all'
                   placeholder='John Doe'
                 />
               </div>
 
               <div>
-                <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                <label className='block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1'>
                   Username
+                  <span className='text-xs text-stone-500 ml-2'>(3-30 characters)</span>
                 </label>
                 <input
                   type='text'
                   name='username'
                   value={formData.username}
                   onChange={handleChange}
-                  className='w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none'
-                  placeholder='johndoe'
+                  minLength={3}
+                  maxLength={30}
+                  className='w-full px-4 py-2 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none transition-all'
+                  placeholder='johndoe (min 3 chars)'
                 />
               </div>
 
               <div>
-                <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                <label className='block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1'>
                   Website
                 </label>
                 <input
@@ -431,7 +453,7 @@ export default function UserProfile() {
                   name='website'
                   value={formData.website}
                   onChange={handleChange}
-                  className='w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none'
+                  className='w-full px-4 py-2 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none transition-all'
                   placeholder='https://example.com'
                 />
               </div>
@@ -440,7 +462,7 @@ export default function UserProfile() {
                 <button
                   type='submit'
                   disabled={updateProfileMutation.isPending}
-                  className='flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50'
+                  className='flex items-center gap-2 px-5 py-2.5 bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition-all disabled:opacity-50 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2'
                 >
                   <Save size={18} />
                   {updateProfileMutation.isPending
@@ -462,8 +484,9 @@ export default function UserProfile() {
 
             <form onSubmit={handlePasswordSubmit} className='p-6 space-y-4'>
               <div>
-                <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                <label className='block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1'>
                   New Password
+                  <span className='text-xs text-stone-500 ml-2'>(min 6 characters)</span>
                 </label>
                 <input
                   type='password'
@@ -474,13 +497,14 @@ export default function UserProfile() {
                       password: e.target.value,
                     })
                   }
-                  className='w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none'
+                  minLength={6}
+                  className='w-full px-4 py-2 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none transition-all'
                   placeholder='••••••••'
                 />
               </div>
 
               <div>
-                <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
+                <label className='block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1'>
                   Confirm Password
                 </label>
                 <input
@@ -492,7 +516,8 @@ export default function UserProfile() {
                       confirmPassword: e.target.value,
                     })
                   }
-                  className='w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none'
+                  minLength={6}
+                  className='w-full px-4 py-2 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none transition-all'
                   placeholder='••••••••'
                 />
               </div>
@@ -501,7 +526,7 @@ export default function UserProfile() {
                 <button
                   type='submit'
                   disabled={changePasswordMutation.isPending}
-                  className='flex items-center gap-2 px-4 py-2 bg-gray-900 dark:bg-gray-700 text-white rounded-lg hover:bg-gray-800 dark:hover:bg-gray-600 transition-colors disabled:opacity-50'
+                  className='flex items-center gap-2 px-5 py-2.5 bg-stone-900 dark:bg-stone-700 text-white rounded-lg hover:bg-stone-800 dark:hover:bg-stone-600 transition-all disabled:opacity-50 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2'
                 >
                   <Lock size={18} />
                   {changePasswordMutation.isPending
