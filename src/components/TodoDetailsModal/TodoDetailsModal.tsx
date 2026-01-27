@@ -276,10 +276,10 @@ export default function TodoDetailsModal({
               <label className='block text-xs font-semibold text-stone-500 uppercase tracking-wider'>
                 Due Date
               </label>
-              <div className='flex gap-2'>
+              <div className='flex flex-col sm:flex-row gap-3'>
                 <div className='relative flex-1'>
                   <Calendar
-                    className='absolute left-3 top-2.5 text-stone-500 dark:text-stone-300 pointer-events-none'
+                    className='absolute left-3 top-3 text-stone-500 dark:text-stone-300 pointer-events-none'
                     size={16}
                   />
                   <input
@@ -287,12 +287,12 @@ export default function TodoDetailsModal({
                     name='dueDate'
                     value={formData.dueDate}
                     onChange={handleChange}
-                    className='w-full pl-10 pr-4 py-2 rounded-lg border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-900/50 text-stone-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none dark:[color-scheme:dark] transition-colors'
+                    className='w-full h-11 pl-10 pr-4 py-2 rounded-lg border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-900/50 text-stone-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none dark:[color-scheme:dark] transition-colors'
                   />
                 </div>
-                <div className='relative w-32'>
+                <div className='relative flex-1'>
                   <Clock
-                    className='absolute left-3 top-2.5 text-stone-500 dark:text-stone-300 pointer-events-none'
+                    className='absolute left-3 top-3 text-stone-500 dark:text-stone-300 pointer-events-none'
                     size={16}
                   />
                   <input
@@ -300,7 +300,7 @@ export default function TodoDetailsModal({
                     name='dueTime'
                     value={formData.dueTime}
                     onChange={handleChange}
-                    className='w-full pl-10 pr-4 py-2 rounded-lg border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-900/50 text-stone-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none dark:[color-scheme:dark] transition-colors'
+                    className='w-full h-11 pl-10 pr-4 py-2 rounded-lg border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-900/50 text-stone-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none dark:[color-scheme:dark] transition-colors'
                   />
                 </div>
               </div>
