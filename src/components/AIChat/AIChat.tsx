@@ -12,6 +12,7 @@ import {
 import { supabase } from '../../lib/supabase';
 import { chatWithBear } from '../../lib/openai';
 import { fetchWeatherByCity, getWeatherDescription } from '../../lib/weather';
+import { useWeather } from '../../hooks/useWeather';
 import type { Todo, NewTodo } from '../../types';
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 
@@ -43,6 +44,9 @@ export default function AIChat({
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Get current weather data
+  const { weatherData } = useWeather();
 
   // Get Current User
   const { data: user } = useQuery({
@@ -110,11 +114,21 @@ export default function AIChat({
         })
         .join('\n\n');
 
+      // Format weather context
+      const weatherContext = weatherData && weatherData.city
+        ? `Current weather in ${weatherData.city}: ${weatherData.temp}°${weatherData.unit || 'C'}, ${getWeatherDescription(weatherData.code)}`
+        : '';
+
+      // Combine contexts
+      const fullContext = weatherContext
+        ? `${todoContext}\n\nWEATHER:\n${weatherContext}`
+        : todoContext;
+
       // Send context of last few messages
       const recentMessages: ChatCompletionMessageParam[] = [...messages, userMessage]
         .slice(-6)
         .map((m) => ({ role: m.role, content: m.content }));
-      const responseMessage = await chatWithBear(recentMessages, todoContext);
+      const responseMessage = await chatWithBear(recentMessages, fullContext);
 
       // Handle Tool Calls
       if (responseMessage.tool_calls) {
