@@ -44,17 +44,17 @@ function SortableSubtaskItem({ subtask, onToggle, onDelete }: SortableSubtaskIte
     <div
       ref={setNodeRef}
       style={style}
-      className='flex items-center gap-3 p-2 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg group transition-colors bg-white dark:bg-gray-800'
+      className='flex items-center gap-3 p-2 hover:bg-stone-50 dark:hover:bg-stone-700/50 rounded-lg group transition-colors bg-white dark:bg-stone-800'
     >
-        <div {...attributes} {...listeners} className="cursor-grab text-gray-400 hover:text-gray-600">
+        <div {...attributes} {...listeners} className="cursor-grab text-stone-400 hover:text-stone-600">
              <GripVertical size={14} />
         </div>
       <button
         onClick={() => onToggle(subtask.id, subtask.completed)}
         className={`shrink-0 w-5 h-5 rounded border flex items-center justify-center transition-all ${
           subtask.completed
-            ? 'bg-blue-600 border-blue-600'
-            : 'border-gray-300 dark:border-gray-500 hover:border-blue-500'
+            ? 'bg-violet-600 border-violet-600'
+            : 'border-stone-300 dark:border-stone-500 hover:border-violet-500'
         }`}
       >
         {subtask.completed && (
@@ -64,15 +64,15 @@ function SortableSubtaskItem({ subtask, onToggle, onDelete }: SortableSubtaskIte
       <span
         className={`flex-1 text-sm ${
           subtask.completed
-            ? 'text-gray-500 line-through'
-            : 'text-gray-700 dark:text-gray-200'
+            ? 'text-stone-500 line-through'
+            : 'text-stone-700 dark:text-stone-200'
         }`}
       >
         {subtask.title}
       </span>
       <button
         onClick={() => onDelete(subtask.id)}
-        className='opacity-0 group-hover:opacity-100 p-1 text-gray-500 hover:text-red-500 transition-all'
+        className='opacity-0 group-hover:opacity-100 p-1 text-stone-500 hover:text-red-500 transition-all'
       >
         <Trash2 size={14} />
       </button>
@@ -224,15 +224,15 @@ export default function TodoDetailsModal({
 
   return (
     <div className='fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-all'>
-      <div className='w-full max-w-2xl bg-white dark:bg-gray-800 rounded-xl shadow-2xl transform transition-all flex flex-col max-h-[90vh]'>
+      <div className='w-full max-w-2xl bg-white dark:bg-stone-800 rounded-xl shadow-2xl transform transition-all flex flex-col max-h-[90vh]'>
         {/* Header */}
-        <div className='flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700 shrink-0'>
-          <h2 className='text-xl font-bold text-gray-900 dark:text-white'>
+        <div className='flex items-center justify-between p-6 border-b border-stone-100 dark:border-stone-700 shrink-0'>
+          <h2 className='text-xl font-bold text-stone-900 dark:text-white'>
             Task Details
           </h2>
           <button
             onClick={onClose}
-            className='text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-colors'
+            className='text-stone-500 hover:text-stone-600 dark:hover:text-stone-400 transition-colors'
           >
             <X size={24} />
           </button>
@@ -243,7 +243,7 @@ export default function TodoDetailsModal({
           {/* Title & Description */}
           <div className='space-y-4'>
             <div>
-              <label className='block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2'>
+              <label className='block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2'>
                 Title
               </label>
               <input
@@ -251,12 +251,12 @@ export default function TodoDetailsModal({
                 name='title'
                 value={formData.title}
                 onChange={handleChange}
-                className='w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium text-lg'
+                className='w-full px-4 py-2 rounded-lg border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-900/50 text-stone-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none transition-all font-medium text-lg'
               />
             </div>
 
             <div>
-              <label className='block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2'>
+              <label className='block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2'>
                 Description
               </label>
               <textarea
@@ -264,7 +264,7 @@ export default function TodoDetailsModal({
                 rows={3}
                 value={formData.description}
                 onChange={handleChange}
-                className='w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none'
+                className='w-full px-4 py-2 rounded-lg border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-900/50 text-stone-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none transition-all resize-none'
                 placeholder='Add notes...'
               />
             </div>
@@ -273,13 +273,13 @@ export default function TodoDetailsModal({
           <div className='space-y-6'>
             {/* Due Date & Time */}
             <div className='space-y-4'>
-              <label className='block text-xs font-semibold text-gray-500 uppercase tracking-wider'>
+              <label className='block text-xs font-semibold text-stone-500 uppercase tracking-wider'>
                 Due Date
               </label>
               <div className='flex gap-2'>
                 <div className='relative flex-1'>
                   <Calendar
-                    className='absolute left-3 top-2.5 text-gray-500 dark:text-gray-300 pointer-events-none'
+                    className='absolute left-3 top-2.5 text-stone-500 dark:text-stone-300 pointer-events-none'
                     size={16}
                   />
                   <input
@@ -287,12 +287,12 @@ export default function TodoDetailsModal({
                     name='dueDate'
                     value={formData.dueDate}
                     onChange={handleChange}
-                    className='w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none dark:[color-scheme:dark] transition-colors'
+                    className='w-full pl-10 pr-4 py-2 rounded-lg border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-900/50 text-stone-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none dark:[color-scheme:dark] transition-colors'
                   />
                 </div>
                 <div className='relative w-32'>
                   <Clock
-                    className='absolute left-3 top-2.5 text-gray-500 dark:text-gray-300 pointer-events-none'
+                    className='absolute left-3 top-2.5 text-stone-500 dark:text-stone-300 pointer-events-none'
                     size={16}
                   />
                   <input
@@ -300,7 +300,7 @@ export default function TodoDetailsModal({
                     name='dueTime'
                     value={formData.dueTime}
                     onChange={handleChange}
-                    className='w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none dark:[color-scheme:dark] transition-colors'
+                    className='w-full pl-10 pr-4 py-2 rounded-lg border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-900/50 text-stone-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none dark:[color-scheme:dark] transition-colors'
                   />
                 </div>
               </div>
@@ -308,7 +308,7 @@ export default function TodoDetailsModal({
 
             {/* Priority */}
             <div className='space-y-4'>
-              <label className='block text-xs font-semibold text-gray-500 uppercase tracking-wider'>
+              <label className='block text-xs font-semibold text-stone-500 uppercase tracking-wider'>
                 Priority
               </label>
               <div className='flex gap-2'>
@@ -324,7 +324,7 @@ export default function TodoDetailsModal({
                           : p === 'Medium'
                             ? 'bg-yellow-50 border-yellow-200 text-yellow-700 dark:bg-yellow-900/20 dark:border-yellow-800 dark:text-yellow-300'
                             : 'bg-green-50 border-green-200 text-green-700 dark:bg-green-900/20 dark:border-green-800 dark:text-green-300'
-                        : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                        : 'bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-700'
                     }`}
                   >
                     {p}
@@ -334,12 +334,12 @@ export default function TodoDetailsModal({
             </div>
           </div>
 
-          <hr className='border-gray-100 dark:border-gray-700' />
+          <hr className='border-stone-100 dark:border-stone-700' />
 
           {/* Subtasks */}
           <div>
             <div className='flex items-center justify-between mb-3'>
-              <label className='block text-xs font-semibold text-gray-500 uppercase tracking-wider'>
+              <label className='block text-xs font-semibold text-stone-500 uppercase tracking-wider'>
                 Subtasks (
                 {localSubtasks.filter((s) => s.completed).length || 0}/
                 {localSubtasks.length || 0})
@@ -373,11 +373,11 @@ export default function TodoDetailsModal({
                 type='text'
                 value={newSubtask}
                 onChange={(e) => setNewSubtask(e.target.value)}
-                className='w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all'
+                className='w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none transition-all'
                 placeholder='Add a subtask...'
               />
               <Plus
-                className='absolute left-3 top-2.5 text-gray-500'
+                className='absolute left-3 top-2.5 text-stone-500'
                 size={18}
               />
             </form>
@@ -385,16 +385,16 @@ export default function TodoDetailsModal({
         </div>
 
         {/* Footer Actions */}
-        <div className='p-6 border-t border-gray-100 dark:border-gray-700 shrink-0 flex justify-end gap-3'>
+        <div className='p-6 border-t border-stone-100 dark:border-stone-700 shrink-0 flex justify-end gap-3'>
           <button
             onClick={onClose}
-            className='px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors'
+            className='px-4 py-2 text-sm font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-lg transition-colors'
           >
             Cancel
           </button>
           <button
             onClick={handleUpdate}
-            className='px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition-colors'
+            className='px-4 py-2 text-sm font-medium text-white bg-violet-600 hover:bg-violet-700 rounded-lg shadow-sm transition-colors'
           >
             Save Changes
           </button>

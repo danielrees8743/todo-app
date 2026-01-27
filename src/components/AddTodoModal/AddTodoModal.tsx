@@ -68,16 +68,16 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
 
   return (
     <div className='fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-all'>
-      <div className='w-full max-w-lg bg-white dark:bg-gray-800 rounded-xl shadow-2xl transform transition-all'>
+      <div className='w-full max-w-lg bg-white dark:bg-stone-800 rounded-xl shadow-2xl transform transition-all'>
         {/* Header */}
-        <div className='flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700'>
-          <h2 className='text-xl font-bold text-gray-900 dark:text-white'>
+        <div className='flex items-center justify-between p-6 border-b border-stone-100 dark:border-stone-700'>
+          <h2 className='text-xl font-bold text-stone-900 dark:text-white'>
             Add New Task
           </h2>
           <button
             type='button'
             onClick={onClose}
-            className='text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-colors'
+            className='text-stone-500 hover:text-stone-600 dark:hover:text-stone-400 transition-all hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-stone-800 rounded-lg'
             aria-label='Close modal'
           >
             <X size={24} />
@@ -90,7 +90,7 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
           <div>
             <label
               htmlFor='title'
-              className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'
+              className='block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1'
             >
               Title <span className='text-red-500'>*</span>
             </label>
@@ -99,7 +99,7 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
               id='title'
               name='title'
               required
-              className='w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all'
+              className='w-full px-4 py-2 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none transition-all'
               placeholder='What needs to be done?'
               value={formData.title}
               onChange={handleChange}
@@ -110,7 +110,7 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
           <div>
             <label
               htmlFor='description'
-              className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'
+              className='block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1'
             >
               Description
             </label>
@@ -118,7 +118,7 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
               id='description'
               name='description'
               rows={3}
-              className='w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none'
+              className='w-full px-4 py-2 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none transition-all resize-none'
               placeholder='Add some details...'
               value={formData.description}
               onChange={handleChange}
@@ -129,7 +129,7 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
           <div>
             <label
               htmlFor='tags'
-              className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'
+              className='block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1'
             >
               Tags (comma separated)
             </label>
@@ -137,7 +137,7 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
               type='text'
               id='tags'
               name='tags'
-              className='w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all'
+              className='w-full px-4 py-2 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none transition-all'
               placeholder='Work, Urgent, Design'
               value={formData.tags}
               onChange={handleChange}
@@ -146,7 +146,7 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
 
           {/* Priority */}
           <div>
-            <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
+            <label className='block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2'>
               Priority
             </label>
             <div className='flex gap-3'>
@@ -157,14 +157,14 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
                   onClick={() =>
                     setFormData((prev) => ({ ...prev, priority: p }))
                   }
-                  className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors border ${
+                  className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all border hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-stone-800 ${
                     formData.priority === p
                       ? p === 'High'
-                        ? 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-900'
+                        ? 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-900/30 dark:text-rose-400 dark:border-rose-900'
                         : p === 'Medium'
-                          ? 'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-900'
-                          : 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-900'
-                      : 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
+                          ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-900'
+                          : 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-900'
+                      : 'bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800'
                   }`}
                 >
                   {p}
@@ -175,21 +175,21 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
 
           {/* Due Date & Time */}
           <div>
-            <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
+            <label className='block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2'>
               Due Date
             </label>
-            <div className='flex gap-3'>
+            <div className='flex flex-col sm:flex-row gap-3'>
               <div className='relative flex-1'>
                 <input
                   type='date'
                   id='dueDate'
                   name='dueDate'
                   aria-label='Due date'
-                  className='w-full h-10 px-4 py-2 pl-10 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:[color-scheme:dark]'
+                  className='w-full h-11 px-4 py-2 pl-10 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none transition-all dark:[color-scheme:dark]'
                   value={formData.dueDate}
                   onChange={handleChange}
                 />
-                <Calendar className='absolute left-3 top-2.5 h-5 w-5 text-gray-500 pointer-events-none' />
+                <Calendar className='absolute left-3 top-3 h-5 w-5 text-stone-500 pointer-events-none' />
               </div>
 
               <div className='relative flex-1'>
@@ -198,11 +198,11 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
                   id='dueTime'
                   name='dueTime'
                   aria-label='Due time'
-                  className='w-full h-10 px-4 py-2 pl-10 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:[color-scheme:dark]'
+                  className='w-full h-11 px-4 py-2 pl-10 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none transition-all dark:[color-scheme:dark]'
                   value={formData.dueTime}
                   onChange={handleChange}
                 />
-                <Clock className='absolute left-3 top-2.5 h-5 w-5 text-gray-500 pointer-events-none' />
+                <Clock className='absolute left-3 top-3 h-5 w-5 text-stone-500 pointer-events-none' />
               </div>
             </div>
           </div>
@@ -212,13 +212,13 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
             <button
               type='button'
               onClick={onClose}
-              className='px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors'
+              className='px-5 py-2.5 text-sm font-medium text-stone-700 dark:text-stone-300 bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-600 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 focus:ring-offset-white dark:focus:ring-offset-stone-800 transition-all hover:scale-105 active:scale-95'
             >
               Cancel
             </button>
             <button
               type='submit'
-              className='px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors'
+              className='px-5 py-2.5 text-sm font-medium text-white bg-violet-600 rounded-lg hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 focus:ring-offset-white dark:focus:ring-offset-stone-800 transition-all hover:scale-105 active:scale-95'
             >
               Create Task
             </button>
