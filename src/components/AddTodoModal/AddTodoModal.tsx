@@ -174,40 +174,31 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
           </div>
 
           {/* Due Date & Time */}
-          <div className='grid grid-cols-2 gap-4'>
-            <div>
-              <label
-                htmlFor='dueDate'
-                className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'
-              >
-                Due Date
-              </label>
-              <div className='relative'>
+          <div>
+            <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
+              Due Date
+            </label>
+            <div className='flex gap-3'>
+              <div className='relative flex-1'>
                 <input
                   type='date'
                   id='dueDate'
                   name='dueDate'
-                  className='w-full px-4 py-2 pl-10 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:scheme-dark'
+                  aria-label='Due date'
+                  className='w-full h-10 px-4 py-2 pl-10 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:[color-scheme:dark]'
                   value={formData.dueDate}
                   onChange={handleChange}
                 />
                 <Calendar className='absolute left-3 top-2.5 h-5 w-5 text-gray-500 pointer-events-none' />
               </div>
-            </div>
 
-            <div>
-              <label
-                htmlFor='dueTime'
-                className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'
-              >
-                Time
-              </label>
-              <div className='relative'>
+              <div className='relative flex-1'>
                 <input
                   type='time'
                   id='dueTime'
                   name='dueTime'
-                  className='w-full px-4 py-2 pl-10 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:scheme-dark'
+                  aria-label='Due time'
+                  className='w-full h-10 px-4 py-2 pl-10 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:[color-scheme:dark]'
                   value={formData.dueTime}
                   onChange={handleChange}
                 />

@@ -227,14 +227,14 @@ function TodoApp() {
               <div className='flex gap-2 mb-6'>
                 <button
                   onClick={() => setIsModalOpen(true)}
-                  className='flex-1 flex items-center justify-center gap-2 bg-violet-500 hover:bg-violet-600 text-white py-3 px-4 rounded-xl font-medium transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5'
+                  className='flex-1 min-w-0 flex items-center justify-center gap-2 bg-violet-500 hover:bg-violet-600 text-white py-3 px-4 rounded-xl font-medium transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5'
                 >
-                  <Plus size={20} />
-                  Add New Task
+                  <Plus size={18} className='shrink-0' />
+                  <span className='truncate'>Add New Task</span>
                 </button>
                 <button
                   onClick={() => setIsToolsOpen(!isToolsOpen)}
-                  className={`px-4 py-3 rounded-xl border transition-all flex items-center justify-center ${
+                  className={`shrink-0 px-4 py-3 rounded-xl border transition-all flex items-center justify-center ${
                     isToolsOpen
                       ? 'bg-violet-50 border-violet-200 text-violet-600 dark:bg-violet-900/30 dark:border-violet-800 dark:text-violet-300'
                       : 'border-stone-200 text-stone-500 hover:bg-stone-50 dark:border-stone-700 dark:text-stone-400 dark:hover:bg-stone-700'
