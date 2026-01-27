@@ -34,7 +34,7 @@ This document tracks application features, implementation notes, and completion 
 
 | #   | Enhancement Name              | Description                          | Implementation Details                                                                                         | Done |
 | --- | ----------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------- | ---- |
-| 20  | Model Consistency             | Standardize AI models                | Migrate all AI features to gpt-4o-mini for consistency and cost savings (3x cheaper than gpt-3.5-turbo)       | ⬜   |
+| 20  | Model Consistency             | Standardize AI models                | Migrate all AI features to gpt-4o-mini for consistency and cost savings (3x cheaper than gpt-3.5-turbo)       | ✅   |
 | 21  | Enhanced Todo Context         | Richer task data for AI              | Include task IDs, timestamps, position, completion history in AI context for better reasoning                  | ⬜   |
 | 22  | System Prompt Optimization    | Improve AI instructions              | Enhanced prompts with examples, timezone context, clearer tool usage guidelines                                | ⬜   |
 | 23  | Better Tool Call Matching     | ID-based task matching               | Use task IDs instead of title matching for 100% reliable tool calls                                            | ⬜   |
