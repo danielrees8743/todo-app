@@ -21,7 +21,7 @@ export const getAISuggestions = async (
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'apikey': supabaseAnonKey,
+        'Authorization': `Bearer ${supabaseAnonKey}`,
       },
       body: JSON.stringify({
         action: 'suggestions',
@@ -79,7 +79,7 @@ export const chatWithBear = async (
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'apikey': supabaseAnonKey,
+        'Authorization': `Bearer ${supabaseAnonKey}`,
       },
       body: JSON.stringify({
         action: 'chat',
