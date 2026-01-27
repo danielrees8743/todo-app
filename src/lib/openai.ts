@@ -73,7 +73,7 @@ export const chatWithBear = async (
   messages: ChatCompletionMessageParam[],
   todoContext: string = '',
   retryCount: number = 0
-): Promise<ChatCompletionMessage> => {
+): Promise<ChatCompletionMessage & { model_used?: 'ollama' | 'openai' }> => {
   try {
     const response = await fetch(`${supabaseUrl}/functions/v1/openai-completion`, {
       method: 'POST',
@@ -113,7 +113,7 @@ export const chatWithBear = async (
     }
 
     const data = await response.json();
-    return data.message;
+    return { ...data.message, model_used: data.model_used };
 
   } catch (error) {
     console.error('Error chatting with Bear:', error);
