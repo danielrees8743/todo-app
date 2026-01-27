@@ -3,19 +3,16 @@
 import { supabase } from './supabase';
 import type { ChatCompletionMessageParam, ChatCompletionMessage } from 'openai/resources/chat/completions';
 
-const OPENAI_PROXY_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/openai-proxy`;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 export const getAISuggestions = async (taskDescription: string): Promise<string[]> => {
   try {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    const response = await fetch(OPENAI_PROXY_URL, {
+    const response = await fetch(`${supabaseUrl}/functions/v1/openai-completion`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${session?.access_token || ''}`,
+        'apikey': supabaseAnonKey,
       },
       body: JSON.stringify({
         action: 'suggestions',
@@ -45,15 +42,11 @@ export const chatWithBear = async (
   todoContext: string = ''
 ): Promise<ChatCompletionMessage> => {
   try {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    const response = await fetch(OPENAI_PROXY_URL, {
+    const response = await fetch(`${supabaseUrl}/functions/v1/openai-completion`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${session?.access_token || ''}`,
+        'apikey': supabaseAnonKey,
       },
       body: JSON.stringify({
         action: 'chat',
@@ -67,8 +60,7 @@ export const chatWithBear = async (
       if (response.status === 429 || error.isQuotaError) {
         return {
           role: 'assistant',
-          content:
-            "I'm a bit overwhelmed right now (Rate Limit Exceeded). But I'm still here to cheer you on!",
+          content: "I'm a bit overwhelmed right now (Rate Limit Exceeded). But I'm still here to cheer you on!",
           refusal: null,
         };
       }
@@ -77,8 +69,19 @@ export const chatWithBear = async (
 
     const data = await response.json();
     return data.message;
-  } catch (error) {
+
+  } catch (error: any) {
     console.error('Error chatting with Bear:', error);
+
+    // Handle rate limit errors
+    if (error?.message?.includes('429') || error?.message?.includes('quota')) {
+      return {
+        role: 'assistant',
+        content: "I'm a bit overwhelmed right now (Rate Limit Exceeded). But I'm still here to cheer you on!",
+        refusal: null,
+      };
+    }
+
     return {
       role: 'assistant',
       content: "Sorry, I'm having trouble connecting right now.",
