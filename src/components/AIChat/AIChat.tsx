@@ -43,7 +43,11 @@ export default function AIChat({
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const [lastRequestTime, setLastRequestTime] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Rate limiting config
+  const MIN_REQUEST_INTERVAL = 2000; // 2 seconds between requests
 
   // Get current weather data
   const { weatherData } = useWeather();
@@ -90,10 +94,27 @@ export default function AIChat({
     e.preventDefault();
     if (!input.trim() || isLoading) return;
 
+    // Rate limiting: Check time since last request
+    const now = Date.now();
+    const timeSinceLastRequest = now - lastRequestTime;
+
+    if (timeSinceLastRequest < MIN_REQUEST_INTERVAL) {
+      const waitTime = Math.ceil((MIN_REQUEST_INTERVAL - timeSinceLastRequest) / 1000);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'assistant',
+          content: `Please wait ${waitTime} more second${waitTime > 1 ? 's' : ''} before sending another message.`,
+        },
+      ]);
+      return;
+    }
+
     const userMessage: ChatMessage = { role: 'user', content: input };
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
+    setLastRequestTime(now);
 
     try {
       // Format todos for context
