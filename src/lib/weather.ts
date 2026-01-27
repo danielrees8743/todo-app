@@ -3,6 +3,7 @@ export interface WeatherData {
   code: number;
   precipChance: number;
   city?: string;
+  unit?: 'C' | 'F';
 }
 
 interface OpenMeteoCurrentResponse {
@@ -26,9 +27,14 @@ interface GeocodingResponse {
   results?: GeocodingResult[];
 }
 
-export const fetchWeatherByCoords = async (lat: number, lon: number): Promise<WeatherData> => {
+export const fetchWeatherByCoords = async (
+  lat: number,
+  lon: number,
+  unit: 'C' | 'F' = 'C',
+): Promise<WeatherData> => {
+  const tempUnit = unit === 'C' ? 'celsius' : 'fahrenheit';
   const response = await fetch(
-    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=precipitation_probability_max&timezone=auto`,
+    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=precipitation_probability_max&timezone=auto&temperature_unit=${tempUnit}`,
   );
 
   if (!response.ok) throw new Error('Weather data fetch failed');
@@ -39,10 +45,14 @@ export const fetchWeatherByCoords = async (lat: number, lon: number): Promise<We
     temp: Math.round(data.current.temperature_2m),
     code: data.current.weather_code,
     precipChance: data.daily.precipitation_probability_max[0],
+    unit,
   };
 };
 
-export const fetchWeatherByCity = async (city: string): Promise<WeatherData> => {
+export const fetchWeatherByCity = async (
+  city: string,
+  unit: 'C' | 'F' = 'C',
+): Promise<WeatherData> => {
   // 1. Geocode
   const geoResp = await fetch(
     `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(
@@ -59,7 +69,7 @@ export const fetchWeatherByCity = async (city: string): Promise<WeatherData> => 
   const displayName = `${name}, ${country}`;
 
   // 2. Fetch Weather
-  const weather = await fetchWeatherByCoords(latitude, longitude);
+  const weather = await fetchWeatherByCoords(latitude, longitude, unit);
 
   return {
     ...weather,

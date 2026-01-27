@@ -11,99 +11,68 @@ import {
   CloudFog,
   Loader2,
   Locate,
+  Thermometer,
 } from 'lucide-react';
-import {
-  fetchWeatherByCity as getCityWeather,
-  fetchWeatherByCoords as getCoordsWeather,
-  getWeatherDescription,
-  type WeatherData,
-} from '../../lib/weather';
+import { getWeatherDescription } from '../../lib/weather';
+import { useWeather } from '../../hooks/useWeather';
 
 export default function WeatherWidget() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    weatherData,
+    loading,
+    error,
+    fetchByCity,
+    fetchByCoords,
+    tempUnit,
+    setTempUnit,
+    lastLocation,
+  } = useWeather();
 
   useEffect(() => {
-    // Try to get user location on mount
-    if ('geolocation' in navigator) {
+    // Auto-load last location or try geolocation (only on mount)
+    if (lastLocation && lastLocation.lat && lastLocation.lon) {
+      fetchByCoords(lastLocation.lat, lastLocation.lon);
+    } else if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          fetchWeatherByCoords(
-            position.coords.latitude,
-            position.coords.longitude,
-          );
+          fetchByCoords(position.coords.latitude, position.coords.longitude);
         },
         (err) => {
           console.error('Location access denied or error:', err);
-          fetchWeatherByCity('New York');
+          fetchByCity('New York');
         },
       );
     } else {
-      fetchWeatherByCity('New York');
+      fetchByCity('New York');
     }
-  }, []);
-
-  const fetchWeatherByCoords = async (lat: number, lon: number) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await getCoordsWeather(lat, lon);
-      setWeatherData({
-        ...data,
-        city: 'Current Location',
-      });
-    } catch {
-      setError('Failed to load weather');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchWeatherByCity = async (city: string) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await getCityWeather(city);
-      setWeatherData(data);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load weather';
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount
 
   const handleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (searchQuery.trim()) {
-      fetchWeatherByCity(searchQuery);
+      fetchByCity(searchQuery);
     }
   };
 
   const handleCurrentLocation = () => {
     if ('geolocation' in navigator) {
-      setLoading(true);
-      setError(null);
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          fetchWeatherByCoords(
-            position.coords.latitude,
-            position.coords.longitude,
-          );
+          fetchByCoords(position.coords.latitude, position.coords.longitude);
           setSearchQuery('');
         },
         (err) => {
           console.error('Location access denied or error:', err);
-          setError('Location access denied');
-          setLoading(false);
         },
       );
-    } else {
-      setError('Geolocation not supported');
     }
+  };
+
+  const handleToggleTempUnit = () => {
+    setTempUnit(tempUnit === 'C' ? 'F' : 'C');
   };
 
   const getWeatherIcon = (code: number) => {
@@ -138,22 +107,42 @@ export default function WeatherWidget() {
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder='Search city...'
             aria-label='Search city'
-            className='w-full h-10 pl-3 pr-10 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all'
+            className='w-full h-10 pl-3 pr-28 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all'
           />
-          <button
-            type='button'
-            onClick={handleCurrentLocation}
-            className='absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-500 hover:text-blue-500 hover:bg-gray-200 dark:text-gray-400 dark:hover:text-blue-400 dark:hover:bg-gray-800 rounded-md transition-all'
-            title='Use Current Location'
-            aria-label='Use Current Location'
-          >
-            <Locate size={16} />
-          </button>
+          <div className='absolute right-3 top-1/2 -translate-y-1/2 flex gap-2'>
+            <button
+              type='button'
+              onClick={handleToggleTempUnit}
+              disabled={loading}
+              className={`p-2.5 rounded-md transition-all
+                focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1
+                disabled:opacity-50 disabled:cursor-not-allowed
+                ${tempUnit === 'C'
+                  ? 'text-blue-600 bg-blue-50 hover:bg-blue-100 dark:text-blue-400 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 focus-visible:ring-blue-500 dark:focus-visible:ring-offset-gray-800'
+                  : 'text-orange-600 bg-orange-50 hover:bg-orange-100 dark:text-orange-400 dark:bg-orange-900/20 dark:hover:bg-orange-900/30 focus-visible:ring-orange-500 dark:focus-visible:ring-offset-gray-800'
+                }`}
+              title={`Switch to °${tempUnit === 'C' ? 'F' : 'C'}`}
+              aria-label={`Temperature unit: ${tempUnit === 'C' ? 'Celsius' : 'Fahrenheit'}. Click to switch to ${tempUnit === 'C' ? 'Fahrenheit' : 'Celsius'}.`}
+              aria-pressed={tempUnit === 'C' ? 'true' : 'false'}
+            >
+              <Thermometer size={20} />
+            </button>
+            <button
+              type='button'
+              onClick={handleCurrentLocation}
+              disabled={loading}
+              className='p-2.5 text-gray-500 bg-transparent hover:text-blue-500 hover:bg-gray-200 dark:text-gray-400 dark:hover:text-blue-400 dark:hover:bg-gray-800 rounded-md transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed'
+              title='Use Current Location'
+              aria-label='Use Current Location'
+            >
+              <Locate size={20} />
+            </button>
+          </div>
         </div>
         <button
           type='submit'
           disabled={loading}
-          className='h-10 w-10 flex items-center justify-center bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 shadow-sm'
+          className='h-10 w-10 flex items-center justify-center bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
           aria-label='Search weather'
         >
           {loading ? (
@@ -182,9 +171,14 @@ export default function WeatherWidget() {
             <span className='text-xs font-medium text-gray-600 dark:text-gray-300'>
               {getWeatherDescription(weatherData.code)}
             </span>
-            <span className='text-4xl font-bold text-gray-900 dark:text-white'>
-              {weatherData.temp}°
-            </span>
+            <div className='flex items-baseline justify-center gap-0.5'>
+              <span className='text-4xl font-bold text-gray-900 dark:text-white transition-all duration-300'>
+                {weatherData.temp}
+              </span>
+              <span className='text-2xl font-medium text-gray-600 dark:text-gray-400'>
+                °{weatherData.unit || tempUnit}
+              </span>
+            </div>
           </div>
 
           <div className='flex items-center justify-center gap-2 text-sm text-gray-700 dark:text-gray-300 bg-blue-50 dark:bg-blue-900/20 py-1.5 px-3 rounded-full mx-auto'>
