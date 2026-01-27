@@ -241,7 +241,7 @@ Remember: You have access to the user's complete todo list and can reference it 
           };
 
           console.log('✓ Ollama response generated (free)');
-          return new Response(JSON.stringify({ message }), {
+          return new Response(JSON.stringify({ message, model_used: 'ollama' }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           });
         } catch (ollamaError) {
@@ -425,7 +425,7 @@ Remember: You have access to the user's complete todo list and can reference it 
       });
 
       const message = completion.choices[0].message;
-      return new Response(JSON.stringify({ message }), {
+      return new Response(JSON.stringify({ message, model_used: 'openai' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }

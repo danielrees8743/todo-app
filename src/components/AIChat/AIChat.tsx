@@ -26,6 +26,7 @@ interface AIChatProps {
 interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
+  model_used?: 'ollama' | 'openai';
 }
 
 export default function AIChat({
@@ -221,12 +222,12 @@ export default function AIChat({
 
         setMessages((prev) => [
           ...prev,
-          { role: 'assistant', content: content },
+          { role: 'assistant', content: content, model_used: responseMessage.model_used },
         ]);
       } else {
         setMessages((prev) => [
           ...prev,
-          { role: 'assistant', content: responseMessage.content || '' },
+          { role: 'assistant', content: responseMessage.content || '', model_used: responseMessage.model_used },
         ]);
       }
     } catch (error) {
@@ -295,8 +296,15 @@ export default function AIChat({
                 className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {msg.role === 'assistant' && (
-                  <div className='w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center shrink-0 text-sm overflow-hidden'>
-                    <Dog className='w-5 h-5 text-black dark:text-gray-200' />
+                  <div className='flex flex-col items-center gap-0.5'>
+                    <div className='w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center shrink-0 text-sm overflow-hidden'>
+                      <Dog className='w-5 h-5 text-black dark:text-gray-200' />
+                    </div>
+                    {msg.model_used && (
+                      <span className='text-xs' title={msg.model_used === 'ollama' ? 'Llama 3.2' : 'GPT-4o Mini'}>
+                        {msg.model_used === 'ollama' ? '🦙' : '🧸'}
+                      </span>
+                    )}
                   </div>
                 )}
                 <div
