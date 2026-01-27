@@ -5,7 +5,17 @@ import type { ChatCompletionMessageParam, ChatCompletionMessage } from 'openai/r
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export const getAISuggestions = async (taskDescription: string): Promise<string[]> => {
+// Retry configuration
+const MAX_RETRIES = 3;
+const INITIAL_BACKOFF = 1000; // 1 second
+
+// Helper function for exponential backoff retry
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+export const getAISuggestions = async (
+  taskDescription: string,
+  retryCount: number = 0
+): Promise<string[]> => {
   try {
     const response = await fetch(`${supabaseUrl}/functions/v1/openai-completion`, {
       method: 'POST',
@@ -21,10 +31,22 @@ export const getAISuggestions = async (taskDescription: string): Promise<string[
 
     if (!response.ok) {
       const error = await response.json();
+
+      // Handle 429 rate limit with retry
       if (response.status === 429 || error.isQuotaError) {
-        console.log('Quota exceeded, using offline fallback suggestions');
+        if (retryCount < MAX_RETRIES) {
+          const backoffTime = INITIAL_BACKOFF * Math.pow(2, retryCount);
+          console.log(`Rate limited. Retrying subtask suggestions in ${backoffTime}ms...`);
+
+          await sleep(backoffTime);
+          return getAISuggestions(taskDescription, retryCount + 1);
+        }
+
+        // Max retries exceeded, use offline fallback
+        console.log('Max retries exceeded, using offline fallback suggestions');
         return generateOfflineSuggestions(taskDescription);
       }
+
       throw new Error(error.error || 'Failed to get AI suggestions');
     }
 
@@ -32,13 +54,25 @@ export const getAISuggestions = async (taskDescription: string): Promise<string[
     return data.suggestions || [];
   } catch (error) {
     console.error('Error fetching AI suggestions:', error);
+
+    // Retry on network errors
+    if (retryCount < MAX_RETRIES && error instanceof Error &&
+        (error.message.includes('fetch') || error.message.includes('network'))) {
+      const backoffTime = INITIAL_BACKOFF * Math.pow(2, retryCount);
+      console.log(`Network error. Retrying in ${backoffTime}ms...`);
+
+      await sleep(backoffTime);
+      return getAISuggestions(taskDescription, retryCount + 1);
+    }
+
     return generateOfflineSuggestions(taskDescription);
   }
 };
 
 export const chatWithBear = async (
   messages: ChatCompletionMessageParam[],
-  todoContext: string = ''
+  todoContext: string = '',
+  retryCount: number = 0
 ): Promise<ChatCompletionMessage> => {
   try {
     const response = await fetch(`${supabaseUrl}/functions/v1/openai-completion`, {
@@ -56,13 +90,25 @@ export const chatWithBear = async (
 
     if (!response.ok) {
       const error = await response.json();
+
+      // Handle 429 rate limit with retry
       if (response.status === 429 || error.isQuotaError) {
+        if (retryCount < MAX_RETRIES) {
+          const backoffTime = INITIAL_BACKOFF * Math.pow(2, retryCount);
+          console.log(`Rate limited. Retrying in ${backoffTime}ms... (attempt ${retryCount + 1}/${MAX_RETRIES})`);
+
+          await sleep(backoffTime);
+          return chatWithBear(messages, todoContext, retryCount + 1);
+        }
+
+        // Max retries exceeded
         return {
           role: 'assistant',
-          content: "I'm a bit overwhelmed right now (Rate Limit Exceeded). But I'm still here to cheer you on!",
+          content: "I'm currently experiencing high demand and couldn't process your request. Please try again in a few moments.",
           refusal: null,
         };
       }
+
       throw new Error(error.error || 'Failed to chat with Bear');
     }
 
@@ -72,18 +118,19 @@ export const chatWithBear = async (
   } catch (error) {
     console.error('Error chatting with Bear:', error);
 
-    // Handle rate limit errors
-    if (error instanceof Error && (error.message.includes('429') || error.message.includes('quota'))) {
-      return {
-        role: 'assistant',
-        content: "I'm a bit overwhelmed right now (Rate Limit Exceeded). But I'm still here to cheer you on!",
-        refusal: null,
-      };
+    // Retry on network errors
+    if (retryCount < MAX_RETRIES && error instanceof Error &&
+        (error.message.includes('fetch') || error.message.includes('network'))) {
+      const backoffTime = INITIAL_BACKOFF * Math.pow(2, retryCount);
+      console.log(`Network error. Retrying in ${backoffTime}ms... (attempt ${retryCount + 1}/${MAX_RETRIES})`);
+
+      await sleep(backoffTime);
+      return chatWithBear(messages, todoContext, retryCount + 1);
     }
 
     return {
       role: 'assistant',
-      content: "Sorry, I'm having trouble connecting right now.",
+      content: "Sorry, I'm having trouble connecting right now. Please check your internet connection and try again.",
       refusal: null,
     };
   }

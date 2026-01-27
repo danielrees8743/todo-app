@@ -1,12 +1,51 @@
 // OpenAI Completion Proxy - Updated Jan 27, 2026
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import OpenAI from 'https://esm.sh/openai@4.52.0';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers':
     'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
+};
+
+// Rate limiting configuration
+const RATE_LIMIT = 20; // requests per window
+const RATE_WINDOW = 60 * 1000; // 1 minute in milliseconds
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+
+// Clean up old entries periodically
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, value] of rateLimitMap.entries()) {
+    if (now > value.resetTime) {
+      rateLimitMap.delete(key);
+    }
+  }
+}, 60 * 1000); // Clean every minute
+
+// Rate limit check function
+const checkRateLimit = (userId: string): { allowed: boolean; retryAfter?: number } => {
+  const now = Date.now();
+  const userLimit = rateLimitMap.get(userId);
+
+  if (!userLimit || now > userLimit.resetTime) {
+    // Reset or create new limit window
+    rateLimitMap.set(userId, {
+      count: 1,
+      resetTime: now + RATE_WINDOW
+    });
+    return { allowed: true };
+  }
+
+  if (userLimit.count >= RATE_LIMIT) {
+    const retryAfter = Math.ceil((userLimit.resetTime - now) / 1000);
+    return { allowed: false, retryAfter };
+  }
+
+  userLimit.count++;
+  return { allowed: true };
 };
 
 serve(async (req) => {
@@ -19,11 +58,55 @@ serve(async (req) => {
   }
 
   try {
+    // Get user ID from authorization header
+    const authHeader = req.headers.get('authorization');
+    let userId = 'anonymous';
+
+    if (authHeader) {
+      try {
+        // Create Supabase client to verify token
+        const supabaseClient = createClient(
+          Deno.env.get('SUPABASE_URL') ?? '',
+          Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+          { global: { headers: { Authorization: authHeader } } }
+        );
+
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        if (user) {
+          userId = user.id;
+        }
+      } catch (error) {
+        console.error('Error extracting user ID:', error);
+        // Continue with anonymous if token validation fails
+      }
+    }
+
+    // Check rate limit
+    const rateLimitCheck = checkRateLimit(userId);
+    if (!rateLimitCheck.allowed) {
+      return new Response(
+        JSON.stringify({
+          error: `Rate limit exceeded. You can make ${RATE_LIMIT} requests per minute. Please try again in ${rateLimitCheck.retryAfter} seconds.`,
+          isQuotaError: true,
+          retry_after: rateLimitCheck.retryAfter
+        }),
+        {
+          status: 429,
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/json',
+            'Retry-After': String(rateLimitCheck.retryAfter)
+          }
+        }
+      );
+    }
+
     // Try both with and without space (there's a trailing space in the secret name)
     const apiKey = Deno.env.get('OPENAI_API_KEY') || Deno.env.get('OPENAI_API_KEY ') || Deno.env.get('OPEN_API_KEY');
 
     // Debug log
     console.log('API Key available:', apiKey ? 'Yes' : 'No');
+    console.log('User ID:', userId, 'Requests:', rateLimitMap.get(userId)?.count || 1);
 
     const openai = new OpenAI({
       apiKey: apiKey || undefined,
