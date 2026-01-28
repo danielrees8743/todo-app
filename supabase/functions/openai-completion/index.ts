@@ -80,6 +80,44 @@ const callOllama = async (messages: Array<{ role: string; content: string }>) =>
   }
 };
 
+// Helper function to try Ollama with OpenAI fallback for suggestions
+const tryOllamaWithFallbackForSuggestions = async (
+  openaiClient: OpenAI,
+  messages: Array<{ role: string; content: string }>,
+  model: string = 'gpt-4o-mini'
+): Promise<{ content: string; modelUsed: 'ollama' | 'openai' }> => {
+  let content = '';
+  let modelUsed: 'ollama' | 'openai' = 'openai';
+
+  // Try Ollama first if enabled
+  if (USE_OLLAMA) {
+    try {
+      console.log('Trying Ollama for subtask suggestions');
+      const ollamaContent = await callOllama(messages);
+      content = ollamaContent;
+      modelUsed = 'ollama';
+      console.log('✓ Ollama subtask suggestions generated (free)');
+    } catch (ollamaError) {
+      console.log('Ollama failed for suggestions, using OpenAI:', ollamaError);
+      // Fall through to OpenAI fallback
+    }
+  }
+
+  // Fallback to OpenAI if Ollama failed or is disabled
+  if (!content) {
+    if (!USE_OLLAMA) {
+      console.log('Ollama disabled, using OpenAI for suggestions');
+    }
+    const completion = await openaiClient.chat.completions.create({
+      messages,
+      model,
+    });
+    content = completion.choices[0].message.content || '';
+  }
+
+  return { content, modelUsed };
+};
+
 // Helper to detect if a message needs tool calling
 const needsToolCalling = (userMessage: string): boolean => {
   const toolKeywords = [
@@ -160,56 +198,17 @@ serve(async (req) => {
     const { action, messages, taskDescription, todoContext } = await req.json();
 
     if (action === 'suggestions') {
-      let content = '';
-      let modelUsed: 'ollama' | 'openai' = 'openai';
-
-      // Try Ollama first (only if enabled)
-      if (USE_OLLAMA) {
-        try {
-          console.log('Trying Ollama for subtask suggestions');
-          const ollamaContent = await callOllama([
+      const { content, modelUsed } = await tryOllamaWithFallbackForSuggestions(
+        openai,
+        [
           {
             role: 'system',
             content:
               'You are a helpful productivity assistant. When given a task description, suggest 3-5 concrete, actionable subtasks to complete it. Return ONLY a valid JSON array of strings, e.g. ["Buy milk", "Check expiration date"]',
           },
           { role: 'user', content: taskDescription },
-        ]);
-        content = ollamaContent;
-        modelUsed = 'ollama';
-        console.log('✓ Ollama subtask suggestions generated (free)');
-        } catch (ollamaError) {
-          console.log('Ollama failed for suggestions, using OpenAI:', ollamaError);
-          // Fallback to OpenAI
-          const completion = await openai.chat.completions.create({
-            messages: [
-              {
-                role: 'system',
-                content:
-                  'You are a helpful productivity assistant. When given a task description, suggest 3-5 concrete, actionable subtasks to complete it. Return ONLY a valid JSON array of strings, e.g. ["Buy milk", "Check expiration date"]',
-              },
-              { role: 'user', content: taskDescription },
-            ],
-            model: 'gpt-4o-mini',
-          });
-          content = completion.choices[0].message.content || '';
-        }
-      } else {
-        // Ollama disabled, use OpenAI directly
-        console.log('Ollama disabled, using OpenAI for suggestions');
-        const completion = await openai.chat.completions.create({
-          messages: [
-            {
-              role: 'system',
-              content:
-                'You are a helpful productivity assistant. When given a task description, suggest 3-5 concrete, actionable subtasks to complete it. Return ONLY a valid JSON array of strings, e.g. ["Buy milk", "Check expiration date"]',
-            },
-            { role: 'user', content: taskDescription },
-          ],
-          model: 'gpt-4o-mini',
-        });
-        content = completion.choices[0].message.content || '';
-      }
+        ]
+      );
 
       let suggestions = [];
       try {

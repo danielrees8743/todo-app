@@ -36,6 +36,44 @@ async function callOllama(messages: any[], tools?: any[]) {
   return await response.json();
 }
 
+// Helper function to try Ollama with OpenAI fallback
+async function tryOllamaWithFallback(
+  openaiClient: OpenAI,
+  messages: any[],
+  model: string = 'gpt-4o-mini',
+  tools?: any[]
+): Promise<{ completion: any; modelUsed: 'ollama' | 'openai' }> {
+  let completion: any;
+  let modelUsed: 'ollama' | 'openai' = 'openai';
+
+  // Try Ollama first if enabled
+  if (USE_OLLAMA) {
+    try {
+      console.log(`Trying Ollama at ${OLLAMA_BASE_URL} with model ${OLLAMA_MODEL}`);
+      const ollamaResponse = await callOllama(messages, tools);
+      completion = ollamaResponse;
+      modelUsed = 'ollama';
+      console.log('Ollama request successful');
+    } catch (ollamaError) {
+      console.log('Ollama failed, falling back to OpenAI:', ollamaError);
+      // Fall through to OpenAI fallback
+    }
+  }
+
+  // Fallback to OpenAI if Ollama failed or is disabled
+  if (!completion) {
+    completion = await openaiClient.chat.completions.create({
+      messages,
+      model,
+      tools,
+      tool_choice: tools ? 'auto' : undefined,
+    });
+    modelUsed = 'openai';
+  }
+
+  return { completion, modelUsed };
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -63,45 +101,17 @@ serve(async (req) => {
     const { action, messages, taskDescription, todoContext } = await req.json();
 
     if (action === 'suggestions') {
-      let completion;
-      let modelUsed: 'ollama' | 'openai' = 'openai';
-
-      // Try Ollama first if enabled
-      if (USE_OLLAMA) {
-        try {
-          console.log(`Trying Ollama at ${OLLAMA_BASE_URL} with model ${OLLAMA_MODEL}`);
-          const ollamaResponse = await callOllama([
-            {
-              role: 'system',
-              content:
-                'You are a helpful productivity assistant. When given a task description, suggest 3-5 concrete, actionable subtasks to complete it. Return ONLY a valid JSON array of strings, e.g. ["Buy milk", "Check expiration date"]',
-            },
-            { role: 'user', content: taskDescription },
-          ]);
-          completion = ollamaResponse;
-          modelUsed = 'ollama';
-          console.log('Ollama request successful');
-        } catch (ollamaError) {
-          console.log('Ollama failed, falling back to OpenAI:', ollamaError);
-          // Fall through to OpenAI fallback
-        }
-      }
-
-      // Fallback to OpenAI if Ollama failed or is disabled
-      if (!completion) {
-        completion = await openai.chat.completions.create({
-          messages: [
-            {
-              role: 'system',
-              content:
-                'You are a helpful productivity assistant. When given a task description, suggest 3-5 concrete, actionable subtasks to complete it. Return ONLY a valid JSON array of strings, e.g. ["Buy milk", "Check expiration date"]',
-            },
-            { role: 'user', content: taskDescription },
-          ],
-          model: 'gpt-4o-mini',
-        });
-        modelUsed = 'openai';
-      }
+      const { completion, modelUsed } = await tryOllamaWithFallback(
+        openai,
+        [
+          {
+            role: 'system',
+            content:
+              'You are a helpful productivity assistant. When given a task description, suggest 3-5 concrete, actionable subtasks to complete it. Return ONLY a valid JSON array of strings, e.g. ["Buy milk", "Check expiration date"]',
+          },
+          { role: 'user', content: taskDescription },
+        ]
+      );
 
       const content = completion.choices[0].message.content;
       let suggestions = [];
@@ -294,36 +304,12 @@ Remember: You have access to the user's complete todo list and can reference it 
         },
       ];
 
-      let completion;
-      let modelUsed: 'ollama' | 'openai' = 'openai';
-
-      // Try Ollama first if enabled
-      if (USE_OLLAMA) {
-        try {
-          console.log(`Trying Ollama at ${OLLAMA_BASE_URL} with model ${OLLAMA_MODEL}`);
-          const ollamaResponse = await callOllama(
-            [systemMessage, ...messages],
-            tools
-          );
-          completion = ollamaResponse;
-          modelUsed = 'ollama';
-          console.log('Ollama chat request successful');
-        } catch (ollamaError) {
-          console.log('Ollama failed, falling back to OpenAI:', ollamaError);
-          // Fall through to OpenAI fallback
-        }
-      }
-
-      // Fallback to OpenAI if Ollama failed or is disabled
-      if (!completion) {
-        completion = await openai.chat.completions.create({
-          messages: [systemMessage, ...messages],
-          model: 'gpt-4o-mini',
-          tools: tools,
-          tool_choice: 'auto',
-        });
-        modelUsed = 'openai';
-      }
+      const { completion, modelUsed } = await tryOllamaWithFallback(
+        openai,
+        [systemMessage, ...messages],
+        'gpt-4o-mini',
+        tools
+      );
 
       const message = completion.choices[0].message;
       return new Response(JSON.stringify({ message, model_used: modelUsed }), {
