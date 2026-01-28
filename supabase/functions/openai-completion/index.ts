@@ -105,6 +105,61 @@ const callOllama = async (messages: Array<{ role: string; content: string }>) =>
 // System prompts
 const SUBTASK_SYSTEM_PROMPT = 'You are a helpful productivity assistant. When given a task description, suggest 3-5 concrete, actionable subtasks to complete it. Return ONLY a valid JSON array of strings, e.g. ["Buy milk", "Check expiration date"]';
 
+// Helper function to try Ollama with OpenAI fallback for suggestions
+const tryOllamaForSuggestions = async (
+  openaiClient: OpenAI,
+  taskDescription: string
+): Promise<{ content: string; modelUsed: 'ollama' | 'openai' }> => {
+  let content = '';
+  let modelUsed: 'ollama' | 'openai' = 'openai';
+
+  // Try Ollama first (only if enabled)
+  if (USE_OLLAMA) {
+    try {
+      console.log('Trying Ollama for subtask suggestions');
+      content = await callOllama([
+        {
+          role: 'system',
+          content: SUBTASK_SYSTEM_PROMPT,
+        },
+        { role: 'user', content: taskDescription },
+      ]);
+      modelUsed = 'ollama';
+      console.log('✓ Ollama subtask suggestions generated (free)');
+    } catch (ollamaError) {
+      console.log('Ollama failed for suggestions, using OpenAI:', ollamaError);
+      // Fallback to OpenAI
+      const completion = await openaiClient.chat.completions.create({
+        messages: [
+          {
+            role: 'system',
+            content: SUBTASK_SYSTEM_PROMPT,
+          },
+          { role: 'user', content: taskDescription },
+        ],
+        model: 'gpt-4o-mini',
+      });
+      content = completion.choices[0].message.content || '';
+    }
+  } else {
+    // Ollama disabled, use OpenAI directly
+    console.log('Ollama disabled, using OpenAI for suggestions');
+    const completion = await openaiClient.chat.completions.create({
+      messages: [
+        {
+          role: 'system',
+          content: SUBTASK_SYSTEM_PROMPT,
+        },
+        { role: 'user', content: taskDescription },
+      ],
+      model: 'gpt-4o-mini',
+    });
+    content = completion.choices[0].message.content || '';
+  }
+
+  return { content, modelUsed };
+};
+
 // Helper to detect if a message needs tool calling
 const needsToolCalling = (userMessage: string): boolean => {
   const toolKeywords = [
@@ -185,53 +240,7 @@ serve(async (req) => {
     const { action, messages, taskDescription, todoContext } = await req.json();
 
     if (action === 'suggestions') {
-      let content = '';
-      let modelUsed: 'ollama' | 'openai' = 'openai';
-
-      // Try Ollama first (only if enabled)
-      if (USE_OLLAMA) {
-        try {
-          console.log('Trying Ollama for subtask suggestions');
-          const ollamaContent = await callOllama([
-          {
-            role: 'system',
-            content: SUBTASK_SYSTEM_PROMPT,
-          },
-          { role: 'user', content: taskDescription },
-        ]);
-        content = ollamaContent;
-        modelUsed = 'ollama';
-        console.log('✓ Ollama subtask suggestions generated (free)');
-        } catch (ollamaError) {
-          console.log('Ollama failed for suggestions, using OpenAI:', ollamaError);
-          // Fallback to OpenAI
-          const completion = await openai.chat.completions.create({
-            messages: [
-              {
-                role: 'system',
-                content: SUBTASK_SYSTEM_PROMPT,
-              },
-              { role: 'user', content: taskDescription },
-            ],
-            model: 'gpt-4o-mini',
-          });
-          content = completion.choices[0].message.content || '';
-        }
-      } else {
-        // Ollama disabled, use OpenAI directly
-        console.log('Ollama disabled, using OpenAI for suggestions');
-        const completion = await openai.chat.completions.create({
-          messages: [
-            {
-              role: 'system',
-              content: SUBTASK_SYSTEM_PROMPT,
-            },
-            { role: 'user', content: taskDescription },
-          ],
-          model: 'gpt-4o-mini',
-        });
-        content = completion.choices[0].message.content || '';
-      }
+      const { content, modelUsed } = await tryOllamaForSuggestions(openai, taskDescription);
 
       let suggestions = [];
       try {
@@ -259,11 +268,11 @@ serve(async (req) => {
         suggestions = parsedLines
           .filter(item => {
             if (!item) return false;
-            if (item.length <= MIN_SUGGESTION_LENGTH) {
+            if (item.length < MIN_SUGGESTION_LENGTH) {
               console.log(`Filtered out suggestion (too short): "${item}"`);
               return false;
             }
-            if (item.length >= MAX_SUGGESTION_LENGTH) {
+            if (item.length > MAX_SUGGESTION_LENGTH) {
               console.log(`Filtered out suggestion (too long): "${item.substring(0, 50)}..."`);
               return false;
             }
