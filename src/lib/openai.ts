@@ -16,6 +16,9 @@ export const getAISuggestions = async (
   taskDescription: string,
   retryCount: number = 0
 ): Promise<string[]> => {
+  const startTime = Date.now();
+  console.log('🤖 [AI Suggestions] Starting request...', { taskDescription, retryCount });
+
   try {
     const response = await fetch(`${supabaseUrl}/functions/v1/openai-completion`, {
       method: 'POST',
@@ -29,6 +32,9 @@ export const getAISuggestions = async (
       }),
     });
 
+    const duration = Date.now() - startTime;
+    console.log(`⏱️ [AI Suggestions] Response received in ${duration}ms`);
+
     if (!response.ok) {
       const error = await response.json();
 
@@ -36,14 +42,14 @@ export const getAISuggestions = async (
       if (response.status === 429 || error.isQuotaError) {
         if (retryCount < MAX_RETRIES) {
           const backoffTime = INITIAL_BACKOFF * Math.pow(2, retryCount);
-          console.log(`Rate limited. Retrying subtask suggestions in ${backoffTime}ms...`);
+          console.log(`⚠️ [AI Suggestions] Rate limited. Retrying in ${backoffTime}ms... (attempt ${retryCount + 1}/${MAX_RETRIES})`);
 
           await sleep(backoffTime);
           return getAISuggestions(taskDescription, retryCount + 1);
         }
 
         // Max retries exceeded, use offline fallback
-        console.log('Max retries exceeded, using offline fallback suggestions');
+        console.log('❌ [AI Suggestions] Max retries exceeded, using offline fallback');
         return generateOfflineSuggestions(taskDescription);
       }
 
@@ -51,6 +57,12 @@ export const getAISuggestions = async (
     }
 
     const data = await response.json();
+    const modelUsed = data.model_used || 'unknown';
+    console.log(`✅ [AI Suggestions] Success using ${modelUsed === 'ollama' ? '🦙 Ollama' : '🧸 OpenAI'}`, {
+      modelUsed,
+      duration: Date.now() - startTime,
+      suggestionsCount: data.suggestions?.length || 0
+    });
     return data.suggestions || [];
   } catch (error) {
     console.error('Error fetching AI suggestions:', error);
@@ -65,6 +77,7 @@ export const getAISuggestions = async (
       return getAISuggestions(taskDescription, retryCount + 1);
     }
 
+    console.log('🔄 [AI Suggestions] Network error, using offline fallback');
     return generateOfflineSuggestions(taskDescription);
   }
 };
@@ -74,7 +87,21 @@ export const chatWithBear = async (
   todoContext: string = '',
   retryCount: number = 0
 ): Promise<ChatCompletionMessage & { model_used?: 'ollama' | 'openai' }> => {
+  const startTime = Date.now();
+  const lastMessage = messages[messages.length - 1]?.content;
+  console.log('💬 [Bear Chat] Starting request...', {
+    messagePreview: typeof lastMessage === 'string' ? lastMessage.substring(0, 50) : 'complex',
+    retryCount
+  });
+
   try {
+    // Increase timeout to 25 seconds for Ollama responses
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+      console.log('⏰ [Bear Chat] Client timeout triggered (25s)');
+      controller.abort();
+    }, 25000);
+
     const response = await fetch(`${supabaseUrl}/functions/v1/openai-completion`, {
       method: 'POST',
       headers: {
@@ -86,7 +113,10 @@ export const chatWithBear = async (
         messages,
         todoContext,
       }),
+      signal: controller.signal,
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       const error = await response.json();
@@ -95,7 +125,7 @@ export const chatWithBear = async (
       if (response.status === 429 || error.isQuotaError) {
         if (retryCount < MAX_RETRIES) {
           const backoffTime = INITIAL_BACKOFF * Math.pow(2, retryCount);
-          console.log(`Rate limited. Retrying in ${backoffTime}ms... (attempt ${retryCount + 1}/${MAX_RETRIES})`);
+          console.log(`⚠️ [Bear Chat] Rate limited. Retrying in ${backoffTime}ms... (attempt ${retryCount + 1}/${MAX_RETRIES})`);
 
           await sleep(backoffTime);
           return chatWithBear(messages, todoContext, retryCount + 1);
@@ -113,21 +143,36 @@ export const chatWithBear = async (
     }
 
     const data = await response.json();
+    const duration = Date.now() - startTime;
+    const modelUsed = data.model_used || 'unknown';
+    console.log(`✅ [Bear Chat] Success using ${modelUsed === 'ollama' ? '🦙 Ollama' : '🧸 OpenAI'}`, {
+      modelUsed,
+      duration: `${duration}ms`,
+      contentLength: data.message?.content?.length || 0
+    });
     return { ...data.message, model_used: data.model_used };
 
   } catch (error) {
-    console.error('Error chatting with Bear:', error);
+    const duration = Date.now() - startTime;
+    const isAbortError = error instanceof Error && error.name === 'AbortError';
 
-    // Retry on network errors
+    if (isAbortError) {
+      console.error(`⏰ [Bear Chat] Timeout after ${duration}ms - likely Ollama was too slow`);
+    } else {
+      console.error('❌ [Bear Chat] Error:', error);
+    }
+
+    // Retry on network errors or timeouts
     if (retryCount < MAX_RETRIES && error instanceof Error &&
-        (error.message.includes('fetch') || error.message.includes('network'))) {
+        (error.message.includes('fetch') || error.message.includes('network') || isAbortError)) {
       const backoffTime = INITIAL_BACKOFF * Math.pow(2, retryCount);
-      console.log(`Network error. Retrying in ${backoffTime}ms... (attempt ${retryCount + 1}/${MAX_RETRIES})`);
+      console.log(`🔄 [Bear Chat] Retrying in ${backoffTime}ms... (attempt ${retryCount + 1}/${MAX_RETRIES})`);
 
       await sleep(backoffTime);
       return chatWithBear(messages, todoContext, retryCount + 1);
     }
 
+    console.log('❌ [Bear Chat] All retries failed, returning error message');
     return {
       role: 'assistant',
       content: "Sorry, I'm having trouble connecting right now. Please check your internet connection and try again.",

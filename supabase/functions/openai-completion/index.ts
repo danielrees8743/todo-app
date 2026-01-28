@@ -4,8 +4,9 @@ import OpenAI from 'https://esm.sh/openai@4.52.0';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 
 // Ollama configuration
-const OLLAMA_URL = Deno.env.get('OLLAMA_URL') || 'http://host.docker.internal:11434';
-const OLLAMA_MODEL = 'llama3.2';
+const USE_OLLAMA = Deno.env.get('USE_OLLAMA') !== 'false'; // Default to true unless explicitly set to 'false'
+const OLLAMA_BASE_URL = Deno.env.get('OLLAMA_BASE_URL') || 'http://192.168.0.216:11434';
+const OLLAMA_MODEL = Deno.env.get('OLLAMA_MODEL') || 'llama3.2:1b';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -55,7 +56,8 @@ const checkRateLimit = (userId: string): { allowed: boolean; retryAfter?: number
 // Helper function to call Ollama
 const callOllama = async (messages: Array<{ role: string; content: string }>) => {
   try {
-    const response = await fetch(`${OLLAMA_URL}/api/chat`, {
+    console.log(`Calling Ollama at ${OLLAMA_BASE_URL} with model ${OLLAMA_MODEL}`);
+    const response = await fetch(`${OLLAMA_BASE_URL}/api/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -70,6 +72,7 @@ const callOllama = async (messages: Array<{ role: string; content: string }>) =>
     }
 
     const data = await response.json();
+    console.log('✓ Ollama response received');
     return data.message.content;
   } catch (error) {
     console.error('Ollama API error:', error);
@@ -157,28 +160,85 @@ serve(async (req) => {
     const { action, messages, taskDescription, todoContext } = await req.json();
 
     if (action === 'suggestions') {
-      // Get AI suggestions for subtasks
-      const completion = await openai.chat.completions.create({
-        messages: [
+      let content = '';
+      let modelUsed: 'ollama' | 'openai' = 'openai';
+
+      // Try Ollama first (only if enabled)
+      if (USE_OLLAMA) {
+        try {
+          console.log('Trying Ollama for subtask suggestions');
+          const ollamaContent = await callOllama([
           {
             role: 'system',
             content:
               'You are a helpful productivity assistant. When given a task description, suggest 3-5 concrete, actionable subtasks to complete it. Return ONLY a valid JSON array of strings, e.g. ["Buy milk", "Check expiration date"]',
           },
           { role: 'user', content: taskDescription },
-        ],
-        model: 'gpt-4o-mini',
-      });
-
-      const content = completion.choices[0].message.content;
-      let suggestions = [];
-      try {
-        suggestions = JSON.parse(content || '[]');
-      } catch {
-        console.error('Failed to parse AI response', content);
+        ]);
+        content = ollamaContent;
+        modelUsed = 'ollama';
+        console.log('✓ Ollama subtask suggestions generated (free)');
+        } catch (ollamaError) {
+          console.log('Ollama failed for suggestions, using OpenAI:', ollamaError);
+          // Fallback to OpenAI
+          const completion = await openai.chat.completions.create({
+            messages: [
+              {
+                role: 'system',
+                content:
+                  'You are a helpful productivity assistant. When given a task description, suggest 3-5 concrete, actionable subtasks to complete it. Return ONLY a valid JSON array of strings, e.g. ["Buy milk", "Check expiration date"]',
+              },
+              { role: 'user', content: taskDescription },
+            ],
+            model: 'gpt-4o-mini',
+          });
+          content = completion.choices[0].message.content || '';
+        }
+      } else {
+        // Ollama disabled, use OpenAI directly
+        console.log('Ollama disabled, using OpenAI for suggestions');
+        const completion = await openai.chat.completions.create({
+          messages: [
+            {
+              role: 'system',
+              content:
+                'You are a helpful productivity assistant. When given a task description, suggest 3-5 concrete, actionable subtasks to complete it. Return ONLY a valid JSON array of strings, e.g. ["Buy milk", "Check expiration date"]',
+            },
+            { role: 'user', content: taskDescription },
+          ],
+          model: 'gpt-4o-mini',
+        });
+        content = completion.choices[0].message.content || '';
       }
 
-      return new Response(JSON.stringify({ suggestions }), {
+      let suggestions = [];
+      try {
+        // Try parsing as JSON first
+        suggestions = JSON.parse(content || '[]');
+      } catch {
+        // If not JSON, try parsing as numbered/bulleted list
+        console.log('Not JSON format, parsing as text list');
+        const lines = content.split('\n');
+        suggestions = lines
+          .map(line => {
+            // Match patterns like: "1. Task", "- Task", "* Task", "• Task", "1) Task"
+            const match = line.match(/^[\s\d\.\)\-\*•]*\s*\*?\*?(.+?)\*?\*?:?$/);
+            if (match && match[1]) {
+              return match[1].trim();
+            }
+            return null;
+          })
+          .filter(item => item && item.length > 3 && item.length < 200)
+          .slice(0, 5); // Max 5 suggestions
+
+        if (suggestions.length === 0) {
+          console.error('Failed to parse AI response', content);
+        } else {
+          console.log(`Parsed ${suggestions.length} suggestions from text format`);
+        }
+      }
+
+      return new Response(JSON.stringify({ suggestions, model_used: modelUsed }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
@@ -206,7 +266,7 @@ serve(async (req) => {
       console.log('Chat request - Requires tools:', requiresTools, 'Message:', lastUserMessage.substring(0, 50));
 
       // Use Ollama for general chat, OpenAI for tool calling
-      if (!requiresTools) {
+      if (!requiresTools && USE_OLLAMA) {
         // Use Ollama for general conversation
         try {
           const systemMessage = {
