@@ -82,6 +82,10 @@ A powerful, feature-rich task management application built with modern web techn
    VITE_SUPABASE_URL=your_supabase_url
    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
    VITE_OPENAI_API_KEY=your_openai_api_key
+
+   # Optional: AI client timeout in milliseconds (default: 30000)
+   # Should be longer than Edge Function timeout to avoid premature timeouts
+   VITE_AI_CLIENT_TIMEOUT_MS=30000
    ```
 
 4. **Run the Development Server**

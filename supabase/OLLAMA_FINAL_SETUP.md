@@ -44,6 +44,7 @@ The local Supabase Edge Runtime has aggressive hardcoded timeouts that we cannot
 - **Pi IP**: `192.168.0.216:11434`
 - **Model**: `llama3.2:1b` (faster, 1B parameters)
 - **Fallback**: OpenAI `gpt-4o-mini`
+- **Client Timeout**: 30 seconds (configurable via `VITE_AI_CLIENT_TIMEOUT_MS`)
 
 ### Files Configured:
 ```

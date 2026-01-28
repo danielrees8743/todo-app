@@ -9,6 +9,12 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const MAX_RETRIES = 3;
 const INITIAL_BACKOFF = 1000; // 1 second
 
+// Client timeout configuration - should be longer than Edge Function timeout to avoid premature timeouts
+// Default: 30000ms (30s) to align with production Edge Function timeout setting
+const CLIENT_TIMEOUT_MS = import.meta.env.VITE_AI_CLIENT_TIMEOUT_MS
+  ? parseInt(import.meta.env.VITE_AI_CLIENT_TIMEOUT_MS, 10)
+  : 30000;
+
 // Helper function for exponential backoff retry
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -95,12 +101,12 @@ export const chatWithBear = async (
   });
 
   try {
-    // Increase timeout to 25 seconds for Ollama responses
+    // Configurable timeout for AI responses (default 30s)
     const controller = new AbortController();
     const timeoutId = setTimeout(() => {
-      console.log('⏰ [Bear Chat] Client timeout triggered (25s)');
+      console.log(`⏰ [Bear Chat] Client timeout triggered (${CLIENT_TIMEOUT_MS}ms)`);
       controller.abort();
-    }, 25000);
+    }, CLIENT_TIMEOUT_MS);
 
     const response = await fetch(`${supabaseUrl}/functions/v1/openai-completion`, {
       method: 'POST',
