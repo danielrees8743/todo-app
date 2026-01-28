@@ -6,14 +6,14 @@ Your Todo app now has a hybrid AI setup that uses Ollama on your Raspberry Pi wh
 
 ### Configuration
 - **Ollama VM**: `192.168.0.216:11434` (Raspberry Pi)
-- **Model**: `llama3.2` (2GB)
+- **Model**: `llama3.2:1b` (1B parameters)
 - **Fallback**: OpenAI `gpt-4o-mini`
 
 ### Performance
 
 | Feature | Model Used | Response Time | Status |
 |---------|------------|---------------|--------|
-| Subtask Suggestions | ✅ Ollama (llama3.2) | ~5-10 seconds | Working great! |
+| Subtask Suggestions | ✅ Ollama (llama3.2:1b) | ~5-10 seconds | Working great! |
 | Bear Chat (simple) | ⚠️ Ollama → OpenAI fallback | 60-90s / 2-3s | Auto-fallback working |
 | Bear Chat (with tools) | ⚠️ Ollama → OpenAI fallback | Timeout / 2-3s | Auto-fallback working |
 

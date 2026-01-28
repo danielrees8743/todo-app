@@ -4,9 +4,15 @@ import OpenAI from 'https://esm.sh/openai@4.52.0';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 
 // Ollama configuration
-const USE_OLLAMA = Deno.env.get('USE_OLLAMA') !== 'false'; // Default to true unless explicitly set to 'false'
-const OLLAMA_BASE_URL = Deno.env.get('OLLAMA_BASE_URL') || 'http://192.168.0.216:11434';
+const USE_OLLAMA = Deno.env.get('USE_OLLAMA') === 'true'; // Default to false (opt-in) for production safety
+const OLLAMA_BASE_URL = Deno.env.get('OLLAMA_BASE_URL') || 'http://localhost:11434';
 const OLLAMA_MODEL = Deno.env.get('OLLAMA_MODEL') || 'llama3.2:1b';
+const OLLAMA_TIMEOUT = 20000; // 20 seconds timeout for Ollama requests
+
+// Suggestion filtering constants
+const MIN_SUGGESTION_LENGTH = 3;
+const MAX_SUGGESTION_LENGTH = 200;
+const MAX_SUGGESTIONS = 5;
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -53,8 +59,13 @@ const checkRateLimit = (userId: string): { allowed: boolean; retryAfter?: number
   return { allowed: true };
 };
 
-// Helper function to call Ollama
+// Helper function to call Ollama with timeout
 const callOllama = async (messages: Array<{ role: string; content: string }>) => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => {
+    controller.abort();
+  }, OLLAMA_TIMEOUT);
+
   try {
     console.log(`Calling Ollama at ${OLLAMA_BASE_URL} with model ${OLLAMA_MODEL}`);
     const response = await fetch(`${OLLAMA_BASE_URL}/api/chat`, {
@@ -65,6 +76,7 @@ const callOllama = async (messages: Array<{ role: string; content: string }>) =>
         messages: messages,
         stream: false,
       }),
+      signal: controller.signal,
     });
 
     if (!response.ok) {
@@ -75,10 +87,23 @@ const callOllama = async (messages: Array<{ role: string; content: string }>) =>
     console.log('✓ Ollama response received');
     return data.message.content;
   } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new Error('Ollama request timed out');
+    }
+    // Differentiate between configuration errors and other errors
+    if (error instanceof Error && (error.message.includes('fetch') || error.message.includes('ECONNREFUSED'))) {
+      console.error('⚠️ Ollama configuration error - check OLLAMA_BASE_URL:', error.message);
+      throw new Error('Ollama server unreachable - check configuration');
+    }
     console.error('Ollama API error:', error);
     throw error;
+  } finally {
+    clearTimeout(timeoutId);
   }
 };
+
+// System prompts
+const SUBTASK_SYSTEM_PROMPT = 'You are a helpful productivity assistant. When given a task description, suggest 3-5 concrete, actionable subtasks to complete it. Return ONLY a valid JSON array of strings, e.g. ["Buy milk", "Check expiration date"]';
 
 // Helper to detect if a message needs tool calling
 const needsToolCalling = (userMessage: string): boolean => {
@@ -170,8 +195,7 @@ serve(async (req) => {
           const ollamaContent = await callOllama([
           {
             role: 'system',
-            content:
-              'You are a helpful productivity assistant. When given a task description, suggest 3-5 concrete, actionable subtasks to complete it. Return ONLY a valid JSON array of strings, e.g. ["Buy milk", "Check expiration date"]',
+            content: SUBTASK_SYSTEM_PROMPT,
           },
           { role: 'user', content: taskDescription },
         ]);
@@ -185,8 +209,7 @@ serve(async (req) => {
             messages: [
               {
                 role: 'system',
-                content:
-                  'You are a helpful productivity assistant. When given a task description, suggest 3-5 concrete, actionable subtasks to complete it. Return ONLY a valid JSON array of strings, e.g. ["Buy milk", "Check expiration date"]',
+                content: SUBTASK_SYSTEM_PROMPT,
               },
               { role: 'user', content: taskDescription },
             ],
@@ -201,8 +224,7 @@ serve(async (req) => {
           messages: [
             {
               role: 'system',
-              content:
-                'You are a helpful productivity assistant. When given a task description, suggest 3-5 concrete, actionable subtasks to complete it. Return ONLY a valid JSON array of strings, e.g. ["Buy milk", "Check expiration date"]',
+              content: SUBTASK_SYSTEM_PROMPT,
             },
             { role: 'user', content: taskDescription },
           ],
@@ -216,25 +238,43 @@ serve(async (req) => {
         // Try parsing as JSON first
         suggestions = JSON.parse(content || '[]');
       } catch {
-        // If not JSON, try parsing as numbered/bulleted list
+        // If not JSON, try parsing as numbered/bulleted list.
+        // Ollama often returns plain text lists like "1. Task", "- Task", "* Task", "• Task", or "1) Task".
         console.log('Not JSON format, parsing as text list');
         const lines = content.split('\n');
-        suggestions = lines
+        const parsedLines = lines
           .map(line => {
-            // Match patterns like: "1. Task", "- Task", "* Task", "• Task", "1) Task"
-            const match = line.match(/^[\s\d\.\)\-\*•]*\s*\*?\*?(.+?)\*?\*?:?$/);
+            // Match simple list item patterns and capture the text after the bullet/number.
+            // Examples: "1. Task", "1) Task", "- Task", "* Task", "• Task"
+            const match = line.match(/^\s*(?:[-*•]|\d+[.)])\s+(.*\S)\s*$/);
             if (match && match[1]) {
               return match[1].trim();
             }
             return null;
           })
-          .filter(item => item && item.length > 3 && item.length < 200)
-          .slice(0, 5); // Max 5 suggestions
+          .filter(item => item !== null);
+
+        // Filter out suggestions that are too short or too long
+        const initialCount = parsedLines.length;
+        suggestions = parsedLines
+          .filter(item => {
+            if (!item) return false;
+            if (item.length <= MIN_SUGGESTION_LENGTH) {
+              console.log(`Filtered out suggestion (too short): "${item}"`);
+              return false;
+            }
+            if (item.length >= MAX_SUGGESTION_LENGTH) {
+              console.log(`Filtered out suggestion (too long): "${item.substring(0, 50)}..."`);
+              return false;
+            }
+            return true;
+          })
+          .slice(0, MAX_SUGGESTIONS);
 
         if (suggestions.length === 0) {
           console.error('Failed to parse AI response', content);
         } else {
-          console.log(`Parsed ${suggestions.length} suggestions from text format`);
+          console.log(`Parsed ${suggestions.length}/${initialCount} suggestions from text format (filtered ${initialCount - suggestions.length})`);
         }
       }
 
