@@ -255,7 +255,7 @@ serve(async (req) => {
           .map(line => {
             // Match simple list item patterns and capture the text after the bullet/number.
             // Examples: "1. Task", "1) Task", "- Task", "* Task", "• Task"
-            const match = line.match(/^\s*(?:[-*•]|\d+[.)])\s+(.*\S)\s*$/);
+            const match = line.match(/^\s*(?:[-*•]|\d+[.)])\s*(.*\S)\s*$/);
             if (match && match[1]) {
               return match[1].trim();
             }
