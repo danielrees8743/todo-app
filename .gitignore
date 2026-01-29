@@ -29,3 +29,7 @@ dist-ssr
 
 # MCP Config with secrets
 .github/mcp.json
+
+# Supabase
+supabase/.branches/
+supabase/.temp/
