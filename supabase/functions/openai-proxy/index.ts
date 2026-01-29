@@ -1,4 +1,4 @@
-// OpenAI Completion Proxy - Updated Jan 27, 2026
+// OpenAI/Ollama Hybrid Proxy - Updated Jan 28, 2026
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import OpenAI from 'https://esm.sh/openai@4.52.0';
 
@@ -8,6 +8,71 @@ const corsHeaders = {
     'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
+
+// Ollama configuration
+const OLLAMA_BASE_URL = Deno.env.get('OLLAMA_BASE_URL') || 'http://192.168.0.216:11434';
+const OLLAMA_MODEL = Deno.env.get('OLLAMA_MODEL') || 'llama3.2:1b';
+const USE_OLLAMA = Deno.env.get('USE_OLLAMA') !== 'false'; // Default to true
+
+// Helper function to call Ollama
+async function callOllama(messages: any[], tools?: any[]) {
+  const response = await fetch(`${OLLAMA_BASE_URL}/v1/chat/completions`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: OLLAMA_MODEL,
+      messages,
+      tools: tools || undefined,
+      stream: false,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Ollama request failed: ${response.status} ${response.statusText}`);
+  }
+
+  return await response.json();
+}
+
+// Helper function to try Ollama with OpenAI fallback
+async function tryOllamaWithFallback(
+  openaiClient: OpenAI,
+  messages: any[],
+  model: string = 'gpt-4o-mini',
+  tools?: any[]
+): Promise<{ completion: any; modelUsed: 'ollama' | 'openai' }> {
+  let completion: any;
+  let modelUsed: 'ollama' | 'openai' = 'openai';
+
+  // Try Ollama first if enabled
+  if (USE_OLLAMA) {
+    try {
+      console.log(`Trying Ollama at ${OLLAMA_BASE_URL} with model ${OLLAMA_MODEL}`);
+      const ollamaResponse = await callOllama(messages, tools);
+      completion = ollamaResponse;
+      modelUsed = 'ollama';
+      console.log('Ollama request successful');
+    } catch (ollamaError) {
+      console.log('Ollama failed, falling back to OpenAI:', ollamaError);
+      // Fall through to OpenAI fallback
+    }
+  }
+
+  // Fallback to OpenAI if Ollama failed or is disabled
+  if (!completion) {
+    completion = await openaiClient.chat.completions.create({
+      messages,
+      model,
+      tools,
+      tool_choice: tools ? 'auto' : undefined,
+    });
+    modelUsed = 'openai';
+  }
+
+  return { completion, modelUsed };
+}
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -36,18 +101,17 @@ serve(async (req) => {
     const { action, messages, taskDescription, todoContext } = await req.json();
 
     if (action === 'suggestions') {
-      // Get AI suggestions for subtasks
-      const completion = await openai.chat.completions.create({
-        messages: [
+      const { completion, modelUsed } = await tryOllamaWithFallback(
+        openai,
+        [
           {
             role: 'system',
             content:
               'You are a helpful productivity assistant. When given a task description, suggest 3-5 concrete, actionable subtasks to complete it. Return ONLY a valid JSON array of strings, e.g. ["Buy milk", "Check expiration date"]',
           },
           { role: 'user', content: taskDescription },
-        ],
-        model: 'gpt-4o-mini',
-      });
+        ]
+      );
 
       const content = completion.choices[0].message.content;
       let suggestions = [];
@@ -57,7 +121,7 @@ serve(async (req) => {
         console.error('Failed to parse AI response', content);
       }
 
-      return new Response(JSON.stringify({ suggestions }), {
+      return new Response(JSON.stringify({ suggestions, model_used: modelUsed }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
@@ -240,15 +304,15 @@ Remember: You have access to the user's complete todo list and can reference it 
         },
       ];
 
-      const completion = await openai.chat.completions.create({
-        messages: [systemMessage, ...messages],
-        model: 'gpt-4o-mini',
-        tools: tools,
-        tool_choice: 'auto',
-      });
+      const { completion, modelUsed } = await tryOllamaWithFallback(
+        openai,
+        [systemMessage, ...messages],
+        'gpt-4o-mini',
+        tools
+      );
 
       const message = completion.choices[0].message;
-      return new Response(JSON.stringify({ message }), {
+      return new Response(JSON.stringify({ message, model_used: modelUsed }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
