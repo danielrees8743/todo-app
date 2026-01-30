@@ -8,6 +8,7 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 // Retry configuration
 const MAX_RETRIES = 3;
 const INITIAL_BACKOFF = 1000; // 1 second
+const CLIENT_TIMEOUT = 25000; // 25 seconds - aligned with Edge Function timeout
 
 // Helper function for exponential backoff retry
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -100,7 +101,7 @@ export const chatWithBear = async (
     const timeoutId = setTimeout(() => {
       console.log('⏰ [Bear Chat] Client timeout triggered (25s)');
       controller.abort();
-    }, 25000);
+    }, CLIENT_TIMEOUT);
 
     const response = await fetch(`${supabaseUrl}/functions/v1/openai-completion`, {
       method: 'POST',

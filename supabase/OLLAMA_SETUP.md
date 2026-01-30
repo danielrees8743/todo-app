@@ -13,7 +13,7 @@ Set these in your Supabase project (Dashboard → Project Settings → Edge Func
 ```bash
 # Ollama Configuration
 OLLAMA_BASE_URL=http://192.168.0.216:11434
-OLLAMA_MODEL=llama3.2
+OLLAMA_MODEL=llama3.2:1b
 USE_OLLAMA=true
 
 # OpenAI Fallback
@@ -26,7 +26,7 @@ For local testing with Supabase CLI, create `supabase/.env.local`:
 
 ```bash
 OLLAMA_BASE_URL=http://192.168.0.216:11434
-OLLAMA_MODEL=llama3.2
+OLLAMA_MODEL=llama3.2:1b
 USE_OLLAMA=true
 OPENAI_API_KEY=your_openai_api_key_here
 ```
