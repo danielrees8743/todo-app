@@ -97,6 +97,44 @@ async function tryOllamaWithFallback(
   return { completion, modelUsed };
 }
 
+// Helper function to try Ollama with OpenAI fallback
+async function tryOllamaWithFallback(
+  openaiClient: OpenAI,
+  messages: any[],
+  model: string = 'gpt-4o-mini',
+  tools?: any[]
+): Promise<{ completion: any; modelUsed: 'ollama' | 'openai' }> {
+  let completion: any;
+  let modelUsed: 'ollama' | 'openai' = 'openai';
+
+  // Try Ollama first if enabled
+  if (USE_OLLAMA) {
+    try {
+      console.log(`Trying Ollama at ${OLLAMA_BASE_URL} with model ${OLLAMA_MODEL}`);
+      const ollamaResponse = await callOllama(messages, tools);
+      completion = ollamaResponse;
+      modelUsed = 'ollama';
+      console.log('Ollama request successful');
+    } catch (ollamaError) {
+      console.log('Ollama failed, falling back to OpenAI:', ollamaError);
+      // Fall through to OpenAI fallback
+    }
+  }
+
+  // Fallback to OpenAI if Ollama failed or is disabled
+  if (!completion) {
+    completion = await openaiClient.chat.completions.create({
+      messages,
+      model,
+      tools,
+      tool_choice: tools ? 'auto' : undefined,
+    });
+    modelUsed = 'openai';
+  }
+
+  return { completion, modelUsed };
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -129,7 +167,8 @@ serve(async (req) => {
         [
           {
             role: 'system',
-            content: SUBTASK_SYSTEM_PROMPT,
+            content:
+              'You are a helpful productivity assistant. When given a task description, suggest 3-5 concrete, actionable subtasks to complete it. Return ONLY a valid JSON array of strings, e.g. ["Buy milk", "Check expiration date"]',
           },
           { role: 'user', content: taskDescription },
         ]
@@ -329,6 +368,7 @@ Remember: You have access to the user's complete todo list and can reference it 
       const { completion, modelUsed } = await tryOllamaWithFallback(
         openai,
         [systemMessage, ...messages],
+        'gpt-4o-mini',
         tools
       );
 

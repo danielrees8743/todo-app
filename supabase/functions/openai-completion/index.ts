@@ -102,57 +102,37 @@ const callOllama = async (messages: Array<{ role: string; content: string }>) =>
   }
 };
 
-// System prompts
-const SUBTASK_SYSTEM_PROMPT = 'You are a helpful productivity assistant. When given a task description, suggest 3-5 concrete, actionable subtasks to complete it. Return ONLY a valid JSON array of strings, e.g. ["Buy milk", "Check expiration date"]';
-
 // Helper function to try Ollama with OpenAI fallback for suggestions
-const tryOllamaForSuggestions = async (
+const tryOllamaWithFallbackForSuggestions = async (
   openaiClient: OpenAI,
-  taskDescription: string
+  messages: Array<{ role: string; content: string }>,
+  model: string = 'gpt-4o-mini'
 ): Promise<{ content: string; modelUsed: 'ollama' | 'openai' }> => {
   let content = '';
   let modelUsed: 'ollama' | 'openai' = 'openai';
 
-  // Try Ollama first (only if enabled)
+  // Try Ollama first if enabled
   if (USE_OLLAMA) {
     try {
       console.log('Trying Ollama for subtask suggestions');
-      content = await callOllama([
-        {
-          role: 'system',
-          content: SUBTASK_SYSTEM_PROMPT,
-        },
-        { role: 'user', content: taskDescription },
-      ]);
+      const ollamaContent = await callOllama(messages);
+      content = ollamaContent;
       modelUsed = 'ollama';
       console.log('✓ Ollama subtask suggestions generated (free)');
     } catch (ollamaError) {
       console.log('Ollama failed for suggestions, using OpenAI:', ollamaError);
-      // Fallback to OpenAI
-      const completion = await openaiClient.chat.completions.create({
-        messages: [
-          {
-            role: 'system',
-            content: SUBTASK_SYSTEM_PROMPT,
-          },
-          { role: 'user', content: taskDescription },
-        ],
-        model: 'gpt-4o-mini',
-      });
-      content = completion.choices[0].message.content || '';
+      // Fall through to OpenAI fallback
     }
-  } else {
-    // Ollama disabled, use OpenAI directly
-    console.log('Ollama disabled, using OpenAI for suggestions');
+  }
+
+  // Fallback to OpenAI if Ollama failed or is disabled
+  if (!content) {
+    if (!USE_OLLAMA) {
+      console.log('Ollama disabled, using OpenAI for suggestions');
+    }
     const completion = await openaiClient.chat.completions.create({
-      messages: [
-        {
-          role: 'system',
-          content: SUBTASK_SYSTEM_PROMPT,
-        },
-        { role: 'user', content: taskDescription },
-      ],
-      model: 'gpt-4o-mini',
+      messages,
+      model,
     });
     content = completion.choices[0].message.content || '';
   }
@@ -240,7 +220,17 @@ serve(async (req) => {
     const { action, messages, taskDescription, todoContext } = await req.json();
 
     if (action === 'suggestions') {
-      const { content, modelUsed } = await tryOllamaForSuggestions(openai, taskDescription);
+      const { content, modelUsed } = await tryOllamaWithFallbackForSuggestions(
+        openai,
+        [
+          {
+            role: 'system',
+            content:
+              'You are a helpful productivity assistant. When given a task description, suggest 3-5 concrete, actionable subtasks to complete it. Return ONLY a valid JSON array of strings, e.g. ["Buy milk", "Check expiration date"]',
+          },
+          { role: 'user', content: taskDescription },
+        ]
+      );
 
       let suggestions = [];
       try {
